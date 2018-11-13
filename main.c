@@ -60,6 +60,7 @@ char *split_back(char *str, const char *delim)
 
 //modes
 void init();
+void save();
 void addMovie();
 void removeMovie();
 void addTag();
@@ -88,18 +89,22 @@ int main(){
     init();
 
     ////remove annotation to view movie import result
-//    for (int i = 0; i < movie_count; i++) {
-//        printf("%d::%s::", (movies + i)->movieID, (movies + i)->title);
-//        for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
-//            printf("%s|", genreList[*((movies + i)->genre + j)]);
+//    if(movie_count != 0) {
+//        for (int i = 0; i < movie_count; i++) {
+//            printf("%d::%s::", (movies + i)->movieID, (movies + i)->title);
+//            for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
+//                printf("%s|", genreList[*((movies + i)->genre + j)]);
+//            }
+//            printf("\b\n");
 //        }
-//        printf("\b\n");
 //    }
 
     ////remove annotation to view tag import result
-//    for(int i=0;i<tag_count;i++) {
-//        Tag temp = *(tags + i);
-//        printf("%d::%d::%s::%lld\n", temp.userID, temp.movieID, temp.tag, temp.timestamp);
+//    if(tag_count != 0) {
+//        for (int i = 0; i < tag_count; i++) {
+//            Tag temp = *(tags + i);
+//            printf("%d::%d::%s::%lld\n", temp.userID, temp.movieID, temp.tag, temp.timestamp);
+//        }
 //    }
 
     free(movies);
@@ -134,7 +139,7 @@ void init() {
     tags = (Tag *) malloc(sizeof(Tag));
 
     FILE *fp = fopen("movies.dat", "r");
-    char line[300];
+    char line[500];
     int index = 0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         movies = (Movie *) realloc(movies, (index + 1) * sizeof(Movie));
