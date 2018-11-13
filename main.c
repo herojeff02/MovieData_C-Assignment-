@@ -5,8 +5,10 @@
 typedef struct {
     int movieID;
     char *title;
+    int releaseYear;
     int *genre;
     short sizeof_genre;
+    short enabled;
 }Movie;
 
 typedef struct {
@@ -14,12 +16,21 @@ typedef struct {
     int movieID;
     char *tag;
     long long timestamp;
+    short enabled;
 }Tag;
+
+typedef struct {
+    int userID;
+    int movieID;
+    short enabled;
+}Favourite;
 
 Movie *movies;
 Tag *tags;
+Favourite *favourites;
 int movie_count;
 int tag_count;
+int favourite_count;
 
 const char *genreList[50];
 int genreListCursor=0;
@@ -47,19 +58,43 @@ char *split_back(char *str, const char *delim)
     }
 }
 
+//modes
 void init();
+void addMovie();
+void removeMovie();
+void addTag();
+void removeTag();
+void addFavourite();
+void removeFavourite();
+void searchByUserID(); //input: userID - output: all tags made by the user, movie info of tags, favourites list, movie info of favourites
+void searchByMovieTitle(); //input: title - output: genre, tags, releaseYear, favourited by whom?, similar movies
+
+//methods
+void printMovieInfo(int movieID);
+void printAllTag(int movieID);
+void printTag(int index);
+int* movieIndex_ByTitle(char *title);
+int* movieIndex_ByGenre(int *genre);
+int movieIndex_ByID(int movieID);
+int* tagIndex_ByUserID(int userID);
+int* tagIndex_ByMovieID(int movieID);
+int* tagIndex_ByDoubleID(int userID, int movieID);
+int* tagIndex_ByTag(char *tag);
+int* favouriteIndex_ByUserID(int userID);
+int* favouriteIndex_ByMovieID(int movieID);
+int favouriteIndex_ByDoubleID(int userID, int movieID);
 
 int main(){
     init();
 
     ////remove annotation to view movie import result
-    for (int i = 0; i < movie_count; i++) {
-        printf("%d::%s::", (movies + i)->movieID, (movies + i)->title);
-        for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
-            printf("%s|", genreList[*((movies + i)->genre + j)]);
-        }
-        printf("\b\n");
-    }
+//    for (int i = 0; i < movie_count; i++) {
+//        printf("%d::%s::", (movies + i)->movieID, (movies + i)->title);
+//        for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
+//            printf("%s|", genreList[*((movies + i)->genre + j)]);
+//        }
+//        printf("\b\n");
+//    }
 
     ////remove annotation to view tag import result
 //    for(int i=0;i<tag_count;i++) {
