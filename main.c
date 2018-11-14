@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 typedef struct {
     int movieID;
@@ -85,13 +86,106 @@ int* favouriteIndex_ByUserID(int userID);
 int* favouriteIndex_ByMovieID(int movieID);
 int favouriteIndex_ByDoubleID(int userID, int movieID);
 
+void integrity()
+{
+    FILE *fp1 = fopen("outputmovie.txt", "r");
+    FILE *fp2 = fopen("movies.dat", "r");
+    // fetching character of two file
+    // in two variable ch1 and ch2
+    char ch1 = getc(fp1);
+    char ch2 = getc(fp2);
+
+    // error keeps track of number of errors
+    // pos keeps track of position of errors
+    // line keeps track of error line
+    int error = 0, pos = 0, line = 1;
+
+    // iterate loop till end of file
+    while (ch1 != EOF && ch2 != EOF)
+    {
+        pos++;
+
+        // if both variable encounters new
+        // line then line variable is incremented
+        // and pos variable is set to 0
+        if (ch1 == '\n' && ch2 == '\n')
+        {
+            line++;
+            pos = 0;
+        }
+
+        // if fetched data is not equal then
+        // error is incremented
+        if (ch1 != ch2)
+        {
+            error++;
+            printf("Line Number : %d \tError"
+                   " Position : %d \n", line, pos);
+        }
+
+        // fetching character until end of file
+        ch1 = getc(fp1);
+        ch2 = getc(fp2);
+    }
+
+    printf("Error count on movies : %d\n", error);
+
+
+    FILE *fp3 = fopen("outputtag.txt", "r");
+    FILE *fp4 = fopen("tags.dat", "r");
+    // fetching character of two file
+    // in two variable ch1 and ch2
+    ch1 = getc(fp3);
+    ch2 = getc(fp4);
+
+    // error keeps track of number of errors
+    // pos keeps track of position of errors
+    // line keeps track of error line
+    error = 0;
+    pos = 0;
+    line = 1;
+
+    // iterate loop till end of file
+    while (ch1 != EOF && ch2 != EOF)
+    {
+        pos++;
+
+        // if both variable encounters new
+        // line then line variable is incremented
+        // and pos variable is set to 0
+        if (ch1 == '\n' && ch2 == '\n')
+        {
+            line++;
+            pos = 0;
+        }
+
+        // if fetched data is not equal then
+        // error is incremented
+        if (ch1 != ch2)
+        {
+            error++;
+            printf("Line Number : %d \tError"
+                   " Position : %d \n", line, pos);
+        }
+
+        // fetching character until end of file
+        ch1 = getc(fp3);
+        ch2 = getc(fp4);
+    }
+
+    printf("Error count on tags : %d\n", error);
+}
+
 int main(){
     init();
+    save();
+    integrity();
 
     ////remove annotation to view movie import result
+
 //    if(movie_count != 0) {
 //        for (int i = 0; i < movie_count; i++) {
-//            printf("%d::%s::", (movies + i)->movieID, (movies + i)->title);
+//            printf("%d::%s (%d)::", (movies + i)->movieID, (movies + i)->title, (movies + i)->releaseYear);
 //            for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
 //                printf("%s|", genreList[*((movies + i)->genre + j)]);
 //            }
@@ -153,7 +247,12 @@ void init() {
         (movies + index)->movieID = atoi(split0);
 
         //1
+        strtok(split1+strlen(split1)-5, ")");
+        char *potential = split1+strlen(split1)-4;
+        int potentialInt = atoi(potential);
+        (movies + index)->releaseYear = potentialInt;
         (movies + index)->title = malloc(strlen(split1) * sizeof(char));
+        strtok(split1+strlen(split1)-7, " (");
         strcpy((movies + index)->title, split1);
 
         //2
@@ -244,4 +343,29 @@ void init() {
     tag_count = index;
 
     return;
+}
+
+void save(){
+    FILE *fp1 = fopen("outputmovie.txt", "w");
+    FILE *fp2 = fopen("outputtag.txt", "w");
+
+    if(movie_count != 0) {
+        for (int i = 0; i < movie_count; i++) {
+            fprintf(fp1, "%d::%s (%d)::", (movies + i)->movieID, (movies + i)->title, (movies + i)->releaseYear);
+            for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
+                fprintf(fp1, "%s", genreList[*((movies + i)->genre + j)]);
+                if(j != ((movies + i)->sizeof_genre)-1){
+                    fprintf(fp1, "|");
+                }
+            }
+            fprintf(fp1, "\n");
+        }
+    }
+
+    if(tag_count != 0) {
+        for (int i = 0; i < tag_count; i++) {
+            Tag temp = *(tags + i);
+            fprintf(fp2, "%d::%d::%s::%lld\n", temp.userID, temp.movieID, temp.tag, temp.timestamp);
+        }
+    }
 }
