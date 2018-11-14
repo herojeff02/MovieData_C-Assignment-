@@ -86,93 +86,57 @@ int* favouriteIndex_ByUserID(int userID);
 int* favouriteIndex_ByMovieID(int movieID);
 int favouriteIndex_ByDoubleID(int userID, int movieID);
 
-void integrity()
-{
+void integrity() {
     FILE *fp1 = fopen("outputmovie.txt", "r");
     FILE *fp2 = fopen("movies.dat", "r");
-    // fetching character of two file
-    // in two variable ch1 and ch2
+
     char ch1 = getc(fp1);
     char ch2 = getc(fp2);
+    int error = 0, potision = 0, line = 1;
 
-    // error keeps track of number of errors
-    // pos keeps track of position of errors
-    // line keeps track of error line
-    int error = 0, pos = 0, line = 1;
-
-    // iterate loop till end of file
-    while (ch1 != EOF && ch2 != EOF)
-    {
-        pos++;
-
-        // if both variable encounters new
-        // line then line variable is incremented
-        // and pos variable is set to 0
-        if (ch1 == '\n' && ch2 == '\n')
-        {
+    while (ch1 != EOF && ch2 != EOF) {
+        potision++;
+        if (ch1 == '\n' && ch2 == '\n') {
             line++;
-            pos = 0;
+            potision = 0;
         }
-
-        // if fetched data is not equal then
-        // error is incremented
-        if (ch1 != ch2)
-        {
+        if (ch1 != ch2) {
             error++;
             printf("Line Number : %d \tError"
-                   " Position : %d \n", line, pos);
+                   " Position : %d \n", line, potision);
         }
-
-        // fetching character until end of file
         ch1 = getc(fp1);
         ch2 = getc(fp2);
     }
-
     printf("Error count on movies : %d\n", error);
+
+    fclose(fp1);
+    fclose(fp2);
 
 
     FILE *fp3 = fopen("outputtag.txt", "r");
     FILE *fp4 = fopen("tags.dat", "r");
-    // fetching character of two file
-    // in two variable ch1 and ch2
     ch1 = getc(fp3);
     ch2 = getc(fp4);
 
-    // error keeps track of number of errors
-    // pos keeps track of position of errors
-    // line keeps track of error line
     error = 0;
-    pos = 0;
+    potision = 0;
     line = 1;
 
-    // iterate loop till end of file
-    while (ch1 != EOF && ch2 != EOF)
-    {
-        pos++;
-
-        // if both variable encounters new
-        // line then line variable is incremented
-        // and pos variable is set to 0
-        if (ch1 == '\n' && ch2 == '\n')
-        {
+    while (ch1 != EOF && ch2 != EOF) {
+        potision++;
+        if (ch1 == '\n' && ch2 == '\n') {
             line++;
-            pos = 0;
+            potision = 0;
         }
-
-        // if fetched data is not equal then
-        // error is incremented
-        if (ch1 != ch2)
-        {
+        if (ch1 != ch2) {
             error++;
             printf("Line Number : %d \tError"
-                   " Position : %d \n", line, pos);
+                   " Position : %d \n", line, potision);
         }
-
-        // fetching character until end of file
         ch1 = getc(fp3);
         ch2 = getc(fp4);
     }
-
     printf("Error count on tags : %d\n", error);
 }
 
