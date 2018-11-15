@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#define fail_movieIDExists 2
+#define fail_invalidYear 3
+#define success 1
+
 typedef struct {
     int movieID;
     char *title;
@@ -26,6 +30,13 @@ typedef struct {
     short enabled;
 }Favourite;
 
+typedef struct {
+     int userID;
+     char *userName;
+     char *password;
+     int *favouriteIndex;
+}User;
+
 Movie *movies;
 Tag *tags;
 Favourite *favourites;
@@ -33,7 +44,7 @@ int movie_count;
 int tag_count;
 int favourite_count;
 
-const char *genreList[50];
+char *genreList[50];
 int genreListCursor=0;
 
 char *split_front(char *str, const char *delim) {
@@ -61,7 +72,10 @@ char *split_back(char *str, const char *delim)
 
 //modes
 void init();
+void menu();
 void save();
+int selectMenu();
+void close();
 void addMovie();
 void removeMovie();
 void addTag();
@@ -72,6 +86,11 @@ void searchByUserID(); //input: userID - output: all tags made by the user, movi
 void searchByMovieTitle(); //input: title - output: genre, tags, releaseYear, favourited by whom?, similar movies
 
 //methods
+int genreIndex_ByString(char *genre);
+int addMovieEntity(int movieID, char *title, int releaseYear, int *genre);
+int addTagEntity(int userID, int movieID, char *tag, long long timestamp);
+int addUserEntity(int userID, char *userName, char *password);
+
 void printMovieInfo(int movieID);
 void printAllTag(int movieID);
 void printTag(int index);
@@ -86,7 +105,7 @@ int* favouriteIndex_ByUserID(int userID);
 int* favouriteIndex_ByMovieID(int movieID);
 int favouriteIndex_ByDoubleID(int userID, int movieID);
 
-void integrity() {
+int integrity() {
     FILE *fp1 = fopen("outputmovie.txt", "r");
     FILE *fp2 = fopen("movies.dat", "r");
 
@@ -102,13 +121,13 @@ void integrity() {
         }
         if (ch1 != ch2) {
             error++;
-            printf("Line Number : %d \tError"
-                   " Position : %d \n", line, potision);
         }
         ch1 = getc(fp1);
         ch2 = getc(fp2);
     }
-    printf("Error count on movies : %d\n", error);
+    if(error){
+        return 1;
+    }
 
     fclose(fp1);
     fclose(fp2);
@@ -131,19 +150,21 @@ void integrity() {
         }
         if (ch1 != ch2) {
             error++;
-            printf("Line Number : %d \tError"
-                   " Position : %d \n", line, potision);
         }
         ch1 = getc(fp3);
         ch2 = getc(fp4);
     }
-    printf("Error count on tags : %d\n", error);
+    if(error){
+        return 1;
+    }
+
+    return 0;
 }
 
 int main(){
     init();
     save();
-    integrity();
+    printf("%d", integrity());
 
     ////remove annotation to view movie import result
 
@@ -222,47 +243,19 @@ void init() {
         //2
         split2 = strtok(split2, "\n");
         int cnt;
-        int flag;
         (movies + index)->genre = (int *) malloc(sizeof(int));
         if (strstr(split2, "|")) {
             cnt = 0;
             char *genreSplit = strtok(split2, "|");
             while (genreSplit != NULL) {
-                flag=1;
                 (movies + index)->genre = realloc((movies + index)->genre, (cnt + 1) * sizeof(int));
-                for (int i = 0; i < genreListCursor; i++) {
-                    if (!strcmp(genreSplit, genreList[i])) {
-                        *(((movies + index)->genre) + cnt) = i;
-                        flag=0;
-                        break;
-                    }
-                }
-                if(flag){
-                    genreList[genreListCursor] = (char *) malloc(sizeof(char)*strlen(genreSplit));
-                    strcpy(genreList[genreListCursor], genreSplit);
-                    *(((movies + index)->genre) + cnt) = genreListCursor;
-
-                    genreListCursor++;
-                }
+                *(((movies + index)->genre) + cnt) = genreIndex_ByString(genreSplit);
                 genreSplit = strtok(NULL, "|");
                 cnt++;
             }
             (movies + index)->sizeof_genre = cnt;
         } else {
-            flag=1;
-            for (int i = 0; i < genreListCursor; i++) {
-                if (!strcmp(split2, genreList[i])) {
-                    *(((movies + index)->genre)) = i;
-                    flag=0;
-                    break;
-                }
-            }
-            if(flag){
-                genreList[genreListCursor] = (char *) malloc(sizeof(char)*strlen(split2));
-                strcpy(genreList[genreListCursor], split2);
-                *(((movies + index)->genre)) = genreListCursor;
-                genreListCursor++;
-            }
+            *(((movies + index)->genre)) = genreIndex_ByString(split2);
             (movies + index)->sizeof_genre = 1;
         }
 
@@ -332,4 +325,64 @@ void save(){
             fprintf(fp2, "%d::%d::%s::%lld\n", temp.userID, temp.movieID, temp.tag, temp.timestamp);
         }
     }
+}
+
+int genreIndex_ByString(char *genre){
+    int flag=1;
+    int i;
+    for (i = 0; i < genreListCursor; i++) {
+        if (!strcmp(genre, genreList[i])) {
+            flag=0;
+            break;
+        }
+    }
+    if(flag){
+        genreList[genreListCursor] = (char *) malloc(sizeof(char)*strlen(genre));
+        strcpy(genreList[genreListCursor], genre);
+        genreListCursor++;
+    }
+    return i;
+}
+
+//void menu() {
+//    int key = 0;
+//    while ((key = selectMenu()) != 0)
+//    {
+//        switch (key)
+//        {
+//            case 1: addMovie(); break;
+//            case 2: removeMovie(); break;
+//            case 3: addTag(); break;
+//            case 4: removeTag(); break;
+//            case 5: addFavourite(); break;
+//            case 6: searchByUserID(); break;
+//            case 7: searchByMovieTitle(); break;
+//            case 0: close(); break;
+//            default: printf("No number.\n"); break;
+//        }
+//    }
+//    return;
+//}
+
+int getnum()
+{
+    int num = 0;
+    printf("Please select an item: ");
+    scanf("%d", &num);
+    return num;
+}
+
+int selectMenu()
+{
+    printf("<Movie data management program>\n");
+    printf("1: Add movie \n2: Remove movie \n3: Add tag \n4: Remove tag \n5: Add favourite \n6: Search by user ID \n7: Search by movie title \n0: Close\n");
+    return getnum();
+}
+
+void close(){
+    save();
+    if(integrity()){
+
+    }
+    exit(0);
 }
