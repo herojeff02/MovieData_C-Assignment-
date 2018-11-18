@@ -94,7 +94,7 @@ void searchByMovieTitle(); //input: title - output: genre, tags, releaseYear, fa
 
 //methods
 int genreIndex_ByString(char *genre);
-int addMovieEntity(int movieID, char *title, int releaseYear, int *genre);
+int addMovieEntity(int movieID, char *title, int releaseYear, int *genre, short genre_count);
 int addTagEntity(int userID, int movieID, char *tag, long long timestamp);
 int addUserEntity(int userID, char *userName, char *password);
 
@@ -104,15 +104,15 @@ void deleteTag_ByIndex(int index);
 void printMovieInfo(int movieID);
 void printAllTag(int movieID);
 void printTag(int index);
-int* movieIndex_ByTitle(char *title);
-int* movieIndex_ByGenre(int *genre);
+int* movieIndex_ByTitle(char *title); ////returns -1 at end of array
+int* movieIndex_ByGenre(int *genre, short genre_count); ////returns -1 at end of array
 int movieIndex_ByID(int movieID);
-int* tagIndex_ByUserID(int userID);
-int* tagIndex_ByMovieID(int movieID);
-int* tagIndex_ByDoubleID(int userID, int movieID);
-int* tagIndex_ByTag(char *tag);
-int* favouriteIndex_ByUserID(int userID);
-int* favouriteIndex_ByMovieID(int movieID);
+int* tagIndex_ByUserID(int userID); ////returns -1 at end of array
+int* tagIndex_ByMovieID(int movieID); ////returns -1 at end of array
+int* tagIndex_ByDoubleID(int userID, int movieID); ////returns -1 at end of array
+int* tagIndex_ByTag(char *tag); ////returns -1 at end of array
+int* favouriteIndex_ByUserID(int userID); ////returns -1 at end of array
+int* favouriteIndex_ByMovieID(int movieID); ////returns -1 at end of arrayreturns -1 at end of array
 int favouriteIndex_ByDoubleID(int userID, int movieID);
 
 int integrity() {
@@ -156,6 +156,14 @@ int integrity() {
 int main(){
     init();
     save();
+//    int ar[] = {1,3};
+    int *result = tagIndex_ByTag("!");
+    for(int i=0;;i++){
+        if(*(result+i) == -1)
+            break;
+        printf("%d ",*(result+i));
+    }
+
     if(integrity()){
         printf("something is seriously wrong with the data");
     }
@@ -184,15 +192,13 @@ int main(){
     free(tags);
     return 0;
 }
-
-void init() {
+void initMovie(){
     genreList[0] = "Action";
     genreListCursor=1;
 
     //init movie
 
     movies = (Movie *) malloc(sizeof(Movie));
-    tags = (Tag *) malloc(sizeof(Tag));
 
     FILE *fp;
     if (testing_file){
@@ -249,8 +255,15 @@ void init() {
     fclose(fp);
 
     movie_count = index;
+    return;
+}
+void initTag(){
+    FILE *fp;
+    char line[500];
+    int index = 0;
 
     //init tag
+    tags = (Tag *) malloc(sizeof(Tag));
 
     if (testing_file){
         fp = fopen(testTagFile, "r");
@@ -290,19 +303,23 @@ void init() {
     fclose(fp);
 
     tag_count = index;
-
     return;
 }
+void initUser(){
 
-void save(){
-    FILE *fp1, *fp2;
+}
+void init() {
+    initMovie();
+    initTag();
+}
+
+void saveMovie(){
+    FILE *fp1;
     if(testing_file){
         fp1 = fopen(testMovieFile, "w");
-        fp2 = fopen(testTagFile, "w");
     }
     else{
         fp1 = fopen(movieFile, "w");
-        fp2 = fopen(tagFile, "w");
     }
 
     if(movie_count != 0) {
@@ -320,6 +337,17 @@ void save(){
         }
     }
 
+    fclose(fp1);
+}
+void saveTag(){
+    FILE *fp2;
+    if(testing_file){
+        fp2 = fopen(testTagFile, "w");
+    }
+    else{
+        fp2 = fopen(tagFile, "w");
+    }
+
     if(tag_count != 0) {
         for (int i = 0; i < tag_count; i++) {
             if((tags+i)->enabled) {
@@ -329,8 +357,11 @@ void save(){
         }
     }
 
-    fclose(fp1);
     fclose(fp2);
+}
+void save(){
+    saveMovie();
+    saveTag();
 }
 
 int genreIndex_ByString(char *genre){
@@ -370,16 +401,14 @@ int genreIndex_ByString(char *genre){
 //    return;
 //}
 
-int getnum()
-{
+int getnum() {
     int num = 0;
     printf("Please select an item: ");
     scanf("%d", &num);
     return num;
 }
 
-int selectMenu()
-{
+int selectMenu() {
     printf("<Movie data management program>\n");
     printf("1: Add movie \n2: Remove movie \n3: Add tag \n4: Remove tag \n5: Add favourite \n6: Search by user ID \n7: Search by movie title \n0: Close\n");
     return getnum();
@@ -392,3 +421,195 @@ void close(){
     }
     exit(0);
 }
+
+int addMovieEntity(int movieID, char *title, int releaseYear, int *genre, short genre_count){
+    movies = (Movie *) realloc(movies, (movie_count + 1) * sizeof(Movie));
+
+    //0
+    (movies + movie_count)->movieID = movieID;
+
+    //1
+    (movies + movie_count)->releaseYear = releaseYear;
+    (movies + movie_count)->title = malloc(strlen(title) * sizeof(char));
+    strcpy((movies + movie_count)->title, title);
+
+    //2
+    (movies + movie_count)->genre = (int *) malloc(sizeof(int)*genre_count);
+    for(int i=0;i<genre_count;i++){
+        *(((movies + movie_count)->genre)+i) = (genre+i);
+    }
+    (movies + movie_count)->sizeof_genre = genre_count;
+    (movies + movie_count) -> enabled = 1;
+
+    movie_count++;
+}
+int addTagEntity(int userID, int movieID, char *tag, long long timestamp){
+    //0
+    (tags+tag_count) -> userID = userID;
+
+    //1
+    (tags+tag_count) -> movieID = movieID;
+
+    //2
+    (tags+tag_count) -> tag = malloc((strlen(tag)+1)* sizeof(char));
+    strcpy((tags+tag_count) -> tag, tag);
+
+    //3
+    (tags+tag_count) -> timestamp = timestamp;
+
+    (tags+tag_count) -> enabled = 1;
+
+    tag_count++;
+}
+int addUserEntity(int userID, char *userName, char *password);
+
+void deleteMovie_ByIndex(int index){
+    if(index>=movie_count){
+        return;
+    }
+    (movies + index) -> enabled = 0;
+    saveMovie();
+    initMovie();
+}
+void deleteTag_ByIndex(int index){
+    if(index>=tag_count){
+        return;
+    }
+    (tags + index) -> enabled = 0;
+    saveTag();
+    initTag();
+}
+
+char* tolowerString(char *content){
+    char* returnArray = malloc(sizeof(char));
+    for(int i=0;i<strlen(content);i++){
+        returnArray = realloc(returnArray, sizeof(char)*(i+1));
+        *(returnArray+i) = tolower(*(content+i));
+    }
+    returnArray = realloc(returnArray, sizeof(char)*strlen(content)+1);
+    *(returnArray+strlen(content)) = '\0';
+    return returnArray;
+}
+
+int* movieIndex_ByTitle(char *title){
+    int *returnArray = malloc(sizeof(int));
+    int count=0;
+    for(int i=0;i<movie_count;i++){
+        if(strstr(tolowerString((movies + i)->title), tolowerString(title))){
+            count++;
+            returnArray = realloc(returnArray, sizeof(int)*count);
+            *(returnArray+count-1) = i;
+        }
+    }
+    returnArray = realloc(returnArray, sizeof(int)*(count+1));
+    *(returnArray+count) = -1;
+    return returnArray;
+}
+
+int compare(const void *first, const void *second){
+    if (*(int*)first > *(int*)second)
+        return 1;
+    else if (*(int*)first < *(int*)second)
+        return -1;
+    else
+        return 0;
+}
+int* tempSortGenre(int index){
+    int *ar = malloc(sizeof(int)*(movies+index)->sizeof_genre);
+    memcpy(ar, (movies+index)->genre, ((movies+index)->sizeof_genre)* sizeof(int));
+    qsort(ar, (size_t)((movies+index)->sizeof_genre), sizeof(int), compare);
+    return ar;
+}
+int* movieIndex_ByGenre(int *genre, short genre_count){
+    int *returnArray = malloc(sizeof(int));
+    int count=0;
+    for(int i=0;i<movie_count;i++) {
+        if ((movies+i)->sizeof_genre == genre_count) {
+            int flag=1;
+            int *ar = malloc(sizeof(int)*genre_count);
+            memcpy(ar, tempSortGenre(i), genre_count* sizeof(int));
+            qsort(genre, (size_t)genre_count, sizeof(int), compare);
+            printf("%d %d %d %d\n", *ar, *genre, *(ar+1), *(genre+1));
+            for(int j=0;j<genre_count;j++) {
+                if(*(ar+j) != *(genre+j)){
+                    flag=0;
+                    break;
+                }
+            }
+            if(flag){
+                count++;
+                returnArray = realloc(returnArray, sizeof(int) * count);
+                *(returnArray + count - 1) = i;
+            }
+        }
+    }
+    returnArray = realloc(returnArray, sizeof(int)*(count+1));
+    *(returnArray+count) = -1;
+    return returnArray;
+}
+int movieIndex_ByID(int movieID){
+    for(int i=0;i<movie_count;i++) {
+        if((movies + i)->movieID == movieID){
+            return i;
+        }
+    }
+}
+int* tagIndex_ByUserID(int userID){
+    int *returnArray = malloc(sizeof(int));
+    int count=0;
+    for(int i=0;i<tag_count;i++){
+        if((tags + i)->userID == userID){
+            count++;
+            returnArray = realloc(returnArray, sizeof(int)*count);
+            *(returnArray+count-1) = i;
+        }
+    }
+    returnArray = realloc(returnArray, sizeof(int)*(count+1));
+    *(returnArray+count) = -1;
+    return returnArray;
+}
+int* tagIndex_ByMovieID(int movieID){
+    int *returnArray = malloc(sizeof(int));
+    int count=0;
+    for(int i=0;i<tag_count;i++){
+        if((tags + i)->movieID == movieID){
+            count++;
+            returnArray = realloc(returnArray, sizeof(int)*count);
+            *(returnArray+count-1) = i;
+        }
+    }
+    returnArray = realloc(returnArray, sizeof(int)*(count+1));
+    *(returnArray+count) = -1;
+    return returnArray;
+}
+int* tagIndex_ByDoubleID(int userID, int movieID){
+    int *returnArray = malloc(sizeof(int));
+    int count=0;
+    for(int i=0;i<tag_count;i++){
+        if((tags + i)->userID == userID && (tags + i)->movieID == movieID){
+            count++;
+            returnArray = realloc(returnArray, sizeof(int)*count);
+            *(returnArray+count-1) = i;
+        }
+    }
+    returnArray = realloc(returnArray, sizeof(int)*(count+1));
+    *(returnArray+count) = -1;
+    return returnArray;
+}
+int* tagIndex_ByTag(char *tag){
+    int *returnArray = malloc(sizeof(int));
+    int count=0;
+    for(int i=0;i<tag_count;i++){
+        if(strstr(tolowerString((tags + i)->tag), tolowerString(tag))){
+            count++;
+            returnArray = realloc(returnArray, sizeof(int)*count);
+            *(returnArray+count-1) = i;
+        }
+    }
+    returnArray = realloc(returnArray, sizeof(int)*(count+1));
+    *(returnArray+count) = -1;
+    return returnArray;
+}
+int* favouriteIndex_ByUserID(int userID);
+int* favouriteIndex_ByMovieID(int movieID);
+int favouriteIndex_ByDoubleID(int userID, int movieID);
