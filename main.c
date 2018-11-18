@@ -3,9 +3,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#define fail_movieIDExists 2
-#define fail_invalidYear 3
-#define success 1
+#define END_OF_INT_ARRAY -500
+
+#define FAIL_MOVIE_ID_ALREADY_EXISTS -2000
+#define FAIL_USER_ID_ALREADY_EXISTS -4000
+#define FAIL_NO_SUCH_MOVIE_ID -5000
+#define FAIL_NO_SUCH_INDEX -6000
+#define FAIL_INVALID_YEAR -3000
+#define SUCCESS -1000
 
 #define testing_file 1
 
@@ -15,6 +20,7 @@
 #define movieFile "movies.dat"
 
 typedef struct {
+    //please do not add more than 2 billion movies. You're not going to, are you?
     int movieID;
     char *title;
     int releaseYear;
@@ -94,25 +100,29 @@ void searchByMovieTitle(); //input: title - output: genre, tags, releaseYear, fa
 
 //methods
 int genreIndex_ByString(char *genre);
+int* genreIndex_ByMovieID(int movieID);
 int addMovieEntity(int movieID, char *title, int releaseYear, int *genre, short genre_count);
 int addTagEntity(int userID, int movieID, char *tag, long long timestamp);
 int addUserEntity(int userID, char *userName, char *password);
 
-void deleteMovie_ByIndex(int index);
-void deleteTag_ByIndex(int index);
+int movieIDExists(int movieID);
+int movieIndexExists(int index);
+
+int deleteMovie_ByIndex(int index);
+int deleteTag_ByIndex(int index);
 
 void printMovieInfo(int movieID);
 void printAllTag(int movieID);
 void printTag(int index);
-int* movieIndex_ByTitle(char *title); ////returns -1 at end of array
-int* movieIndex_ByGenre(int *genre, short genre_count); ////returns -1 at end of array
+int* movieIndex_ByTitle(char *title); ////returns END_OF_INT_ARRAY at end of array
+int* movieIndex_ByGenre(int *genre, short genre_count); ////returns END_OF_INT_ARRAY at end of array
 int movieIndex_ByID(int movieID);
-int* tagIndex_ByUserID(int userID); ////returns -1 at end of array
-int* tagIndex_ByMovieID(int movieID); ////returns -1 at end of array
-int* tagIndex_ByDoubleID(int userID, int movieID); ////returns -1 at end of array
-int* tagIndex_ByTag(char *tag); ////returns -1 at end of array
-int* favouriteIndex_ByUserID(int userID); ////returns -1 at end of array
-int* favouriteIndex_ByMovieID(int movieID); ////returns -1 at end of arrayreturns -1 at end of array
+int* tagIndex_ByUserID(int userID); ////returns END_OF_INT_ARRAY at end of array
+int* tagIndex_ByMovieID(int movieID); ////returns END_OF_INT_ARRAY at end of array
+int* tagIndex_ByDoubleID(int userID, int movieID); ////returns END_OF_INT_ARRAY at end of array
+int* tagIndex_ByTag(char *tag); ////returns END_OF_INT_ARRAY at end of array
+int* favouriteIndex_ByUserID(int userID); ////returns END_OF_INT_ARRAY at end of array
+int* favouriteIndex_ByMovieID(int movieID); ////returns END_OF_INT_ARRAY at end of array
 int favouriteIndex_ByDoubleID(int userID, int movieID);
 
 int integrity() {
@@ -150,19 +160,21 @@ int integrity() {
 //        strcpy(line, "");
     }
 
+    fclose(fp);
     return 0;
 }
 
 int main(){
     init();
-    save();
-//    int ar[] = {1,3};
-    int *result = tagIndex_ByTag("!");
+    int ar[] = {1,3};
+    int *result = genreIndex_ByMovieID(890300);
     for(int i=0;;i++){
-        if(*(result+i) == -1)
+        if(*(result+i) == END_OF_INT_ARRAY)
             break;
         printf("%d ",*(result+i));
     }
+    save();
+
 
     if(integrity()){
         printf("something is seriously wrong with the data");
@@ -422,8 +434,40 @@ void close(){
     exit(0);
 }
 
+int* genreIndex_ByMovieID(int movieID){
+    int *returnArray;
+    int index = movieIndex_ByID(movieID);
+    returnArray = malloc(sizeof(int) * ((movies+index)->sizeof_genre)+1);
+    memcpy(returnArray, (movies+index)->genre, sizeof(int)*((movies+index)->sizeof_genre));
+    *(returnArray + (movies+index)->sizeof_genre) = END_OF_INT_ARRAY;
+    return returnArray;
+}
+
+int movieIDExists(int movieID){
+    for(int i=0;i<movie_count;i++){
+        if((movies + i)->movieID == movieID){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int movieIndexExists(int index){
+    if(index<movie_count) {
+        return 1;
+    }
+    return 0;
+}
+
 int addMovieEntity(int movieID, char *title, int releaseYear, int *genre, short genre_count){
-    movies = (Movie *) realloc(movies, (movie_count + 1) * sizeof(Movie));
+    if(movieIDExists(movieID)){
+        return FAIL_MOVIE_ID_ALREADY_EXISTS;
+    }
+    if(releaseYear > 9999 || releaseYear < 1000){
+        return FAIL_INVALID_YEAR;
+    }
+
+    movies = (Movie *) realloc(movies, (movie_count) * sizeof(Movie));
 
     //0
     (movies + movie_count)->movieID = movieID;
@@ -436,12 +480,15 @@ int addMovieEntity(int movieID, char *title, int releaseYear, int *genre, short 
     //2
     (movies + movie_count)->genre = (int *) malloc(sizeof(int)*genre_count);
     for(int i=0;i<genre_count;i++){
-        *(((movies + movie_count)->genre)+i) = (genre+i);
+        *(((movies + movie_count)->genre)+i) = *(genre+i);
     }
     (movies + movie_count)->sizeof_genre = genre_count;
     (movies + movie_count) -> enabled = 1;
 
     movie_count++;
+    saveMovie();
+//    initMovie();
+    return SUCCESS;
 }
 int addTagEntity(int userID, int movieID, char *tag, long long timestamp){
     //0
@@ -463,21 +510,24 @@ int addTagEntity(int userID, int movieID, char *tag, long long timestamp){
 }
 int addUserEntity(int userID, char *userName, char *password);
 
-void deleteMovie_ByIndex(int index){
-    if(index>=movie_count){
-        return;
+int deleteMovie_ByIndex(int index){
+    if(!movieIndexExists(index)){
+        return FAIL_NO_SUCH_INDEX;
     }
     (movies + index) -> enabled = 0;
     saveMovie();
     initMovie();
+    return SUCCESS;
 }
-void deleteTag_ByIndex(int index){
+int deleteTag_ByIndex(int index){
+    ////add tagIndexExists here
     if(index>=tag_count){
-        return;
+        return FAIL_NO_SUCH_INDEX;
     }
     (tags + index) -> enabled = 0;
     saveTag();
     initTag();
+    return SUCCESS;
 }
 
 char* tolowerString(char *content){
@@ -502,7 +552,7 @@ int* movieIndex_ByTitle(char *title){
         }
     }
     returnArray = realloc(returnArray, sizeof(int)*(count+1));
-    *(returnArray+count) = -1;
+    *(returnArray+count) = END_OF_INT_ARRAY;
     return returnArray;
 }
 
@@ -544,10 +594,13 @@ int* movieIndex_ByGenre(int *genre, short genre_count){
         }
     }
     returnArray = realloc(returnArray, sizeof(int)*(count+1));
-    *(returnArray+count) = -1;
+    *(returnArray+count) = END_OF_INT_ARRAY;
     return returnArray;
 }
 int movieIndex_ByID(int movieID){
+    if(!movieIDExists(movieID)){
+        return FAIL_NO_SUCH_MOVIE_ID;
+    }
     for(int i=0;i<movie_count;i++) {
         if((movies + i)->movieID == movieID){
             return i;
@@ -565,7 +618,7 @@ int* tagIndex_ByUserID(int userID){
         }
     }
     returnArray = realloc(returnArray, sizeof(int)*(count+1));
-    *(returnArray+count) = -1;
+    *(returnArray+count) = END_OF_INT_ARRAY;
     return returnArray;
 }
 int* tagIndex_ByMovieID(int movieID){
@@ -579,7 +632,7 @@ int* tagIndex_ByMovieID(int movieID){
         }
     }
     returnArray = realloc(returnArray, sizeof(int)*(count+1));
-    *(returnArray+count) = -1;
+    *(returnArray+count) = END_OF_INT_ARRAY;
     return returnArray;
 }
 int* tagIndex_ByDoubleID(int userID, int movieID){
@@ -593,7 +646,7 @@ int* tagIndex_ByDoubleID(int userID, int movieID){
         }
     }
     returnArray = realloc(returnArray, sizeof(int)*(count+1));
-    *(returnArray+count) = -1;
+    *(returnArray+count) = END_OF_INT_ARRAY;
     return returnArray;
 }
 int* tagIndex_ByTag(char *tag){
@@ -607,7 +660,7 @@ int* tagIndex_ByTag(char *tag){
         }
     }
     returnArray = realloc(returnArray, sizeof(int)*(count+1));
-    *(returnArray+count) = -1;
+    *(returnArray+count) = END_OF_INT_ARRAY;
     return returnArray;
 }
 int* favouriteIndex_ByUserID(int userID);
