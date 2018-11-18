@@ -7,6 +7,13 @@
 #define fail_invalidYear 3
 #define success 1
 
+#define testing_file 1
+
+#define testTagFile "testtags.dat"
+#define testMovieFile "testmovies.dat"
+#define tagFile "tags.dat"
+#define movieFile "movies.dat"
+
 typedef struct {
     int movieID;
     char *title;
@@ -91,6 +98,9 @@ int addMovieEntity(int movieID, char *title, int releaseYear, int *genre);
 int addTagEntity(int userID, int movieID, char *tag, long long timestamp);
 int addUserEntity(int userID, char *userName, char *password);
 
+void deleteMovie_ByIndex(int index);
+void deleteTag_ByIndex(int index);
+
 void printMovieInfo(int movieID);
 void printAllTag(int movieID);
 void printTag(int index);
@@ -106,56 +116,38 @@ int* favouriteIndex_ByMovieID(int movieID);
 int favouriteIndex_ByDoubleID(int userID, int movieID);
 
 int integrity() {
-    FILE *fp1 = fopen("outputmovie.txt", "r");
-    FILE *fp2 = fopen("movies.dat", "r");
-
-    char ch1 = getc(fp1);
-    char ch2 = getc(fp2);
-    int error = 0, potision = 0, line = 1;
-
-    while (ch1 != EOF && ch2 != EOF) {
-        potision++;
-        if (ch1 == '\n' && ch2 == '\n') {
-            line++;
-            potision = 0;
-        }
-        if (ch1 != ch2) {
-            error++;
-        }
-        ch1 = getc(fp1);
-        ch2 = getc(fp2);
+    FILE *fp;
+    if(testing_file){
+        fp = fopen(testMovieFile, "r");
     }
-    if(error){
-        return 1;
+    else{
+        fp = fopen(movieFile, "r");
     }
-
-    fclose(fp1);
-    fclose(fp2);
-
-
-    FILE *fp3 = fopen("outputtag.txt", "r");
-    FILE *fp4 = fopen("tags.dat", "r");
-    ch1 = getc(fp3);
-    ch2 = getc(fp4);
-
-    error = 0;
-    potision = 0;
-    line = 1;
-
-    while (ch1 != EOF && ch2 != EOF) {
-        potision++;
-        if (ch1 == '\n' && ch2 == '\n') {
-            line++;
-            potision = 0;
+    char line[500];
+    char genLine[500];
+    int i=0;
+    while (fgets(line, sizeof(line) - 1, fp) != NULL) {
+        while(!((movies + i)->enabled)){
+            i++;
         }
-        if (ch1 != ch2) {
-            error++;
+
+//        strcpy(genLine, "");
+        sprintf(genLine, "%d::%s (%d)::", ((movies + i)->movieID), (movies + i)->title, (movies + i)->releaseYear);
+        for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
+            strcat(genLine, genreList[*((movies + i)->genre + j)]);
+            if (j != ((movies + i)->sizeof_genre) - 1) {
+                strcat(genLine, "|");
+            }
         }
-        ch1 = getc(fp3);
-        ch2 = getc(fp4);
-    }
-    if(error){
-        return 1;
+        strcat(genLine, "\n");
+        if(strcmp(line, genLine)) {
+            printf("%s\n", line);
+            printf("%s\n",genLine);
+            printf("i : %d\n",i);
+//            return 1;
+        }
+        i++;
+//        strcpy(line, "");
     }
 
     return 0;
@@ -164,7 +156,9 @@ int integrity() {
 int main(){
     init();
     save();
-    printf("%d", integrity());
+    if(integrity()){
+        printf("something is seriously wrong with the data");
+    }
 
     ////remove annotation to view movie import result
 
@@ -193,31 +187,20 @@ int main(){
 
 void init() {
     genreList[0] = "Action";
-    genreList[1] = "Adventure";
-    genreList[2] = "Animation";
-    genreList[3] = "Children";
-    genreList[4] = "Comedy";
-    genreList[5] = "Crime";
-    genreList[6] = "Documentary";
-    genreList[7] = "Drama";
-    genreList[8] = "Fantasy";
-    genreList[9] = "Film-Noir";
-    genreList[10] = "Horror";
-    genreList[11] = "Musical";
-    genreList[12] = "Mystery";
-    genreList[13] = "Romance";
-    genreList[14] = "Sci-Fi";
-    genreList[15] = "Thriller";
-    genreList[16] = "War";
-    genreList[17] = "Western";
-    genreListCursor=18;
+    genreListCursor=1;
 
     //init movie
 
     movies = (Movie *) malloc(sizeof(Movie));
     tags = (Tag *) malloc(sizeof(Tag));
 
-    FILE *fp = fopen("movies.dat", "r");
+    FILE *fp;
+    if (testing_file){
+        fp = fopen(testMovieFile, "r");
+    }
+    else{
+        fp = fopen(movieFile, "r");
+    }
     char line[500];
     int index = 0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
@@ -259,6 +242,8 @@ void init() {
             (movies + index)->sizeof_genre = 1;
         }
 
+        (movies+index) -> enabled = 1;
+
         index++;
     }
     fclose(fp);
@@ -267,7 +252,12 @@ void init() {
 
     //init tag
 
-    fp = fopen("tags.dat", "r");
+    if (testing_file){
+        fp = fopen(testTagFile, "r");
+    }
+    else{
+        fp = fopen(tagFile, "r");
+    }
     index = 0;
     while(fgets(line, sizeof(line) - 1, fp) != NULL){
         tags = (Tag *) realloc(tags, (index+1) * sizeof(Tag));
@@ -293,6 +283,8 @@ void init() {
         split3 = strtok(split3, "\n");
         (tags+index) -> timestamp = atoll(split3);
 
+        (tags+index) -> enabled = 1;
+
         index++;
     }
     fclose(fp);
@@ -303,28 +295,42 @@ void init() {
 }
 
 void save(){
-    FILE *fp1 = fopen("outputmovie.txt", "w");
-    FILE *fp2 = fopen("outputtag.txt", "w");
+    FILE *fp1, *fp2;
+    if(testing_file){
+        fp1 = fopen(testMovieFile, "w");
+        fp2 = fopen(testTagFile, "w");
+    }
+    else{
+        fp1 = fopen(movieFile, "w");
+        fp2 = fopen(tagFile, "w");
+    }
 
     if(movie_count != 0) {
         for (int i = 0; i < movie_count; i++) {
-            fprintf(fp1, "%d::%s (%d)::", (movies + i)->movieID, (movies + i)->title, (movies + i)->releaseYear);
-            for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
-                fprintf(fp1, "%s", genreList[*((movies + i)->genre + j)]);
-                if(j != ((movies + i)->sizeof_genre)-1){
-                    fprintf(fp1, "|");
+            if ((movies + i)->enabled) {
+                fprintf(fp1, "%d::%s (%d)::", (movies + i)->movieID, (movies + i)->title, (movies + i)->releaseYear);
+                for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
+                    fprintf(fp1, "%s", genreList[*((movies + i)->genre + j)]);
+                    if (j != ((movies + i)->sizeof_genre) - 1) {
+                        fprintf(fp1, "|");
+                    }
                 }
+                fprintf(fp1, "\n");
             }
-            fprintf(fp1, "\n");
         }
     }
 
     if(tag_count != 0) {
         for (int i = 0; i < tag_count; i++) {
-            Tag temp = *(tags + i);
-            fprintf(fp2, "%d::%d::%s::%lld\n", temp.userID, temp.movieID, temp.tag, temp.timestamp);
+            if((tags+i)->enabled) {
+                Tag temp = *(tags + i);
+                fprintf(fp2, "%d::%d::%s::%lld\n", temp.userID, temp.movieID, temp.tag, temp.timestamp);
+            }
         }
     }
+
+    fclose(fp1);
+    fclose(fp2);
 }
 
 int genreIndex_ByString(char *genre){
