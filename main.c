@@ -118,6 +118,8 @@ int addFavouriteEntity(int userID, int movieID);
 
 int movieIDExists(int movieID);
 int movieIndexExists(int index);
+int userIndexExists(int index);
+int userNameExists(char *name);
 
 int deleteMovie_ByIndex(int index);
 int deleteTag_ByIndex(int index);
@@ -584,6 +586,7 @@ int addTagEntity(int userID, int movieID, char *tag, long long timestamp){
     (tags+tag_count) -> enabled = 1;
 
     tag_count++;
+    return SUCCESS;
 }
 int addUserEntity(int userID, char *userName, char *password){
 
