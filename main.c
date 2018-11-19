@@ -52,12 +52,14 @@ typedef struct {
 
 Movie *movies;
 Tag *tags;
+User *users;
 Favourite *favourites;
 int movie_count;
 int tag_count;
+int user_count;
 int favourite_count;
 
-char *genreList[50];
+char *genreList[1300]; //http://ajournalofmusicalthings.com/quick-many-different-genres-popular-music-youre-wrong/
 int genreListCursor=0;
 
 char *split_front(char *str, const char *delim) {
@@ -101,29 +103,55 @@ void searchByMovieTitle(); //input: title - output: genre, tags, releaseYear, fa
 //methods
 int genreIndex_ByString(char *genre);
 int* genreIndex_ByMovieID(int movieID);
+
 int addMovieEntity(int movieID, char *title, int releaseYear, int *genre, short genre_count);
 int addTagEntity(int userID, int movieID, char *tag, long long timestamp);
 int addUserEntity(int userID, char *userName, char *password);
+int addFavouriteEntity(int userID, int movieID);
 
 int movieIDExists(int movieID);
 int movieIndexExists(int index);
 
 int deleteMovie_ByIndex(int index);
 int deleteTag_ByIndex(int index);
+int deleteUser_ByIndex(int index);
+int deleteFavourite_ByIndex(int index);
 
 void printMovieInfo(int movieID);
 void printAllTag(int movieID);
 void printTag(int index);
+
 int* movieIndex_ByTitle(char *title); ////returns END_OF_INT_ARRAY at end of array
 int* movieIndex_ByGenre(int *genre, short genre_count); ////returns END_OF_INT_ARRAY at end of array
 int movieIndex_ByID(int movieID);
+
 int* tagIndex_ByUserID(int userID); ////returns END_OF_INT_ARRAY at end of array
 int* tagIndex_ByMovieID(int movieID); ////returns END_OF_INT_ARRAY at end of array
 int* tagIndex_ByDoubleID(int userID, int movieID); ////returns END_OF_INT_ARRAY at end of array
 int* tagIndex_ByTag(char *tag); ////returns END_OF_INT_ARRAY at end of array
+
 int* favouriteIndex_ByUserID(int userID); ////returns END_OF_INT_ARRAY at end of array
 int* favouriteIndex_ByMovieID(int movieID); ////returns END_OF_INT_ARRAY at end of array
 int favouriteIndex_ByDoubleID(int userID, int movieID);
+
+void testPrint(){
+    if(movie_count != 0) {
+        for (int i = 0; i < movie_count; i++) {
+            printf("%d::%s (%d)::", (movies + i)->movieID, (movies + i)->title, (movies + i)->releaseYear);
+            for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
+                printf("%s|", genreList[*((movies + i)->genre + j)]);
+            }
+            printf("\b\n");
+        }
+    }
+
+    if(tag_count != 0) {
+        for (int i = 0; i < tag_count; i++) {
+            Tag temp = *(tags + i);
+            printf("%d::%d::%s::%lld\n", temp.userID, temp.movieID, temp.tag, temp.timestamp);
+        }
+    }
+}
 
 int integrity() {
     FILE *fp;
@@ -133,8 +161,8 @@ int integrity() {
     else{
         fp = fopen(movieFile, "r");
     }
-    char line[500];
-    char genLine[500];
+    char line[1000];
+    char genLine[1000];
     int i=0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         while(!((movies + i)->enabled)){
@@ -180,26 +208,6 @@ int main(){
         printf("something is seriously wrong with the data");
     }
 
-    ////remove annotation to view movie import result
-
-//    if(movie_count != 0) {
-//        for (int i = 0; i < movie_count; i++) {
-//            printf("%d::%s (%d)::", (movies + i)->movieID, (movies + i)->title, (movies + i)->releaseYear);
-//            for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
-//                printf("%s|", genreList[*((movies + i)->genre + j)]);
-//            }
-//            printf("\b\n");
-//        }
-//    }
-
-    ////remove annotation to view tag import result
-//    if(tag_count != 0) {
-//        for (int i = 0; i < tag_count; i++) {
-//            Tag temp = *(tags + i);
-//            printf("%d::%d::%s::%lld\n", temp.userID, temp.movieID, temp.tag, temp.timestamp);
-//        }
-//    }
-
     free(movies);
     free(tags);
     return 0;
@@ -219,7 +227,7 @@ void initMovie(){
     else{
         fp = fopen(movieFile, "r");
     }
-    char line[500];
+    char line[1000];
     int index = 0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         movies = (Movie *) realloc(movies, (index + 1) * sizeof(Movie));
