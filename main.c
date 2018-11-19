@@ -16,8 +16,12 @@
 
 #define testTagFile "testtags.dat"
 #define testMovieFile "testmovies.dat"
+#define testUserFile "testusers.dat"
+#define testFavouriteFile "testfavourites.dat"
 #define tagFile "tags.dat"
 #define movieFile "movies.dat"
+#define userFile "users.dat"
+#define favouriteFile "favourites.dat"
 
 typedef struct {
     //please do not add more than 2 billion movies. You're not going to, are you?
@@ -46,8 +50,10 @@ typedef struct {
 typedef struct {
      int userID;
      char *userName;
-     char *password;
+     char *password;//yup, plaintext password right here.
      int *favouriteIndex;
+     short enabled;
+     int sizeof_favourites;
 }User;
 
 Movie *movies;
@@ -107,6 +113,7 @@ int* genreIndex_ByMovieID(int movieID);
 int addMovieEntity(int movieID, char *title, int releaseYear, int *genre, short genre_count);
 int addTagEntity(int userID, int movieID, char *tag, long long timestamp);
 int addUserEntity(int userID, char *userName, char *password);
+int addUserEntity_TagData(int userID);
 int addFavouriteEntity(int userID, int movieID);
 
 int movieIDExists(int movieID);
@@ -153,7 +160,7 @@ void testPrint(){
     }
 }
 
-int integrity() {
+int integrity() { //implemented movie, tag
     FILE *fp;
     if(testing_file){
         fp = fopen(testMovieFile, "r");
@@ -194,13 +201,7 @@ int integrity() {
 
 int main(){
     init();
-    int ar[] = {1,3};
-    int *result = genreIndex_ByMovieID(890300);
-    for(int i=0;;i++){
-        if(*(result+i) == END_OF_INT_ARRAY)
-            break;
-        printf("%d ",*(result+i));
-    }
+    printf("%d, %s, %s, %d|%d|%d|%d", users->userID, users->userName, users->password, users->favouriteIndex+0,users->favouriteIndex+1,users->favouriteIndex+2,users->favouriteIndex+3);
     save();
 
 
@@ -326,13 +327,77 @@ void initTag(){
     return;
 }
 void initUser(){
+    users = malloc(sizeof(User));
+    FILE *fp;
+    char line[500];
+    int index = 0;
 
+    if (testing_file){
+        fp = fopen(testUserFile, "r");
+    }
+    else{
+        fp = fopen(userFile, "r");
+    }
+
+    while(fgets(line, sizeof(line) - 1, fp) != NULL){
+        users = (User *) realloc(users, (index+1) * sizeof(User));
+
+        char *split_t = split_back(line, "::");
+        char *split0 = split_front(line, "::"); //tag0
+        char *split_t_t = split_back(split_t, "::");
+        char *split1 = split_front(split_t, "::"); //tag1
+        char *split3 = split_back(split_t_t, "::");
+        char *split2 = split_front(split_t_t, "::");
+
+        //0
+        (users+index) -> userID = atoi(split0);
+
+        //1
+        (users+index) -> userName = malloc((strlen(split1)+1)* sizeof(char));
+        strcpy((users+index) -> userName, split1);
+
+        //2
+        (users+index) -> password = malloc((strlen(split2)+1)* sizeof(char));
+        strcpy((users+index) -> password, split2);
+
+        //3
+        split3 = strtok(split3, "\n");
+        int cnt;
+        (users + index)->favouriteIndex = (int *) malloc(sizeof(int));
+        if (strstr(split2, "|")) {
+            cnt = 0;
+            char *favouriteIndexSplit = strtok(split2, "|");
+            while (favouriteIndexSplit != NULL) {
+                (users + index)->favouriteIndex = realloc((users + index)->favouriteIndex, (cnt + 1) * sizeof(int));
+                *(((users + index)->favouriteIndex) + cnt) = atoi(favouriteIndexSplit);
+                favouriteIndexSplit = strtok(NULL, "|");
+                cnt++;
+            }
+            (users + index)->sizeof_favourites = cnt;
+        } else {
+            *(((users + index)->favouriteIndex)) = atoi(split3);
+            (users + index)->sizeof_favourites = 1;
+        }
+        (users+index) -> favouriteIndex = atoll(split3);
+
+        (users+index) -> enabled = 1;
+
+        index++;
+    }
+
+    user_count = index;
+    fclose(fp);
 }
+
 void init() {
     initMovie();
     initTag();
+    initUser();
 }
 
+void saveUser(){
+
+}
 void saveMovie(){
     FILE *fp1;
     if(testing_file){
@@ -382,6 +447,7 @@ void saveTag(){
 void save(){
     saveMovie();
     saveTag();
+    saveUser();
 }
 
 int genreIndex_ByString(char *genre){
@@ -430,7 +496,10 @@ int getnum() {
 
 int selectMenu() {
     printf("<Movie data management program>\n");
-    printf("1: Add movie \n2: Remove movie \n3: Add tag \n4: Remove tag \n5: Add favourite \n6: Search by user ID \n7: Search by movie title \n0: Close\n");
+    printf("1: Add movie \n2: Remove movie \n"
+           "3: Add tag \n4: Remove tag \n"
+           "5: Add favourite \n6: Search by user ID \n"
+           "7: Search by movie title \n0: Close\n");
     return getnum();
 }
 
@@ -495,7 +564,7 @@ int addMovieEntity(int movieID, char *title, int releaseYear, int *genre, short 
 
     movie_count++;
     saveMovie();
-//    initMovie();
+    initMovie();
     return SUCCESS;
 }
 int addTagEntity(int userID, int movieID, char *tag, long long timestamp){
@@ -516,7 +585,9 @@ int addTagEntity(int userID, int movieID, char *tag, long long timestamp){
 
     tag_count++;
 }
-int addUserEntity(int userID, char *userName, char *password);
+int addUserEntity(int userID, char *userName, char *password){
+
+}
 
 int deleteMovie_ByIndex(int index){
     if(!movieIndexExists(index)){
