@@ -12,7 +12,7 @@
 #define FAIL_INVALID_YEAR -3000
 #define SUCCESS -1000
 
-#define testing_file 1
+#define TEST_FILE_FLAG 1
 
 #define testTagFile "testtags.dat"
 #define testMovieFile "testmovies.dat"
@@ -144,7 +144,7 @@ int favouriteIndex_ByDoubleID(int userID, int movieID);
 
 int integrityMovie(){
     FILE *fp;
-    if(testing_file){
+    if(TEST_FILE_FLAG){
         fp = fopen(testMovieFile, "r");
     }
     else{
@@ -180,7 +180,7 @@ int integrityMovie(){
 }
 int integrityTag(){
     FILE *fp;
-    if(testing_file){
+    if(TEST_FILE_FLAG){
         fp = fopen(testTagFile, "r");
     }
     else{
@@ -214,7 +214,7 @@ int integrityUser(){
 int integrityFavourite(){
     return 0;
 }
-int integrity() { //returns 1 when there's a problem
+int integrity() { //returns 1 when there's a problem.
     if(!integrityMovie()){
         if(!integrityTag()){
             if(!integrityUser()){
@@ -257,7 +257,7 @@ void initMovie(){
     movies = (Movie *) malloc(sizeof(Movie));
 
     FILE *fp;
-    if (testing_file){
+    if (TEST_FILE_FLAG){
         fp = fopen(testMovieFile, "r");
     }
     else{
@@ -321,7 +321,7 @@ void initTag(){
     //init tag
     tags = (Tag *) malloc(sizeof(Tag));
 
-    if (testing_file){
+    if (TEST_FILE_FLAG){
         fp = fopen(testTagFile, "r");
     }
     else{
@@ -367,7 +367,7 @@ void initUser(){
     char line[500];
     int index = 0;
 
-    if (testing_file){
+    if (TEST_FILE_FLAG){
         fp = fopen(testUserFile, "r");
     }
     else{
@@ -399,9 +399,9 @@ void initUser(){
         split3 = strtok(split3, "\n");
         int cnt;
         (users + index)->favouriteIndex = (int *) malloc(sizeof(int));
-        if (strstr(split2, "|")) {
+        if (strstr(split3, "|")) {
             cnt = 0;
-            char *favouriteIndexSplit = strtok(split2, "|");
+            char *favouriteIndexSplit = strtok(split3, "|");
             while (favouriteIndexSplit != NULL) {
                 (users + index)->favouriteIndex = realloc((users + index)->favouriteIndex, (cnt + 1) * sizeof(int));
                 *(((users + index)->favouriteIndex) + cnt) = atoi(favouriteIndexSplit);
@@ -413,9 +413,9 @@ void initUser(){
             *(((users + index)->favouriteIndex)) = atoi(split3);
             (users + index)->sizeof_favourites = 1;
         }
-        (users+index) -> favouriteIndex = atoll(split3);
 
         (users+index) -> enabled = 1;
+
 
         index++;
     }
@@ -434,11 +434,34 @@ void init() {
 }
 
 void saveUser(){
+    FILE *fp1;
+    if(TEST_FILE_FLAG){
+        fp1 = fopen(testUserFile, "w");
+    }
+    else{
+        fp1 = fopen(userFile, "w");
+    }
 
+    if(user_count != 0) {
+        for (int i = 0; i < user_count; i++) {
+            if ((users + i)->enabled) {
+                fprintf(fp1, "%d::%s::%s::", (users + i)->userID, (users + i)->userName, (users + i)->password);
+                for (int j = 0; j < (users + i)->sizeof_favourites; j++) {
+                    fprintf(fp1, "%d", *(((users + i)->favouriteIndex) + j));
+                    if (j != ((users + i)->sizeof_favourites) - 1) {
+                        fprintf(fp1, "|");
+                    }
+                }
+                fprintf(fp1, "\n");
+            }
+        }
+    }
+
+    fclose(fp1);
 }
 void saveMovie(){
     FILE *fp1;
-    if(testing_file){
+    if(TEST_FILE_FLAG){
         fp1 = fopen(testMovieFile, "w");
     }
     else{
@@ -464,7 +487,7 @@ void saveMovie(){
 }
 void saveTag(){
     FILE *fp2;
-    if(testing_file){
+    if(TEST_FILE_FLAG){
         fp2 = fopen(testTagFile, "w");
     }
     else{
