@@ -62,7 +62,7 @@ int tag_count;
 int user_count;
 int favourite_count;
 
-char *genreList[1300]; //http://ajournalofmusicalthings.com/quick-many-different-genres-popular-music-youre-wrong/
+char **genreList;
 int genreListCursor=0;
 
 char *split_front(char *str, const char *delim) {
@@ -249,12 +249,12 @@ int main(){
 }
 
 void initMovie(){
-    genreList[0] = "Action";
-    genreListCursor=1;
+    genreListCursor=0;
 
     //init movie
 
     movies = (Movie *) malloc(sizeof(Movie));
+    genreList = (char **)malloc(sizeof(char*));
 
     FILE *fp;
     if (TEST_FILE_FLAG){
@@ -315,7 +315,7 @@ void initMovie(){
 }
 void initTag(){
     FILE *fp;
-    char line[500];
+    char line[1000];
     int index = 0;
 
     //init tag
@@ -364,7 +364,7 @@ void initTag(){
 void initUser(){
     users = malloc(sizeof(User));
     FILE *fp;
-    char line[500];
+    char line[1000];
     int index = 0;
 
     if (TEST_FILE_FLAG){
@@ -538,14 +538,15 @@ int genreIndex_ByString(char *genre){
     int flag=1;
     int i;
     for (i = 0; i < genreListCursor; i++) {
-        if (!strcmp(genre, genreList[i])) {
+        if (!strcmp(genre, *(genreList+i))) {
             flag=0;
             break;
         }
     }
     if(flag){
-        genreList[genreListCursor] = (char *) malloc(sizeof(char)*strlen(genre));
-        strcpy(genreList[genreListCursor], genre);
+        genreList = (char **)realloc(genreList,sizeof(char*)*(genreListCursor+1));
+        *(genreList+genreListCursor) = (char *) malloc(sizeof(char)*strlen(genre));
+        strcpy(*(genreList+genreListCursor), genre);
         genreListCursor++;
     }
     return i;
