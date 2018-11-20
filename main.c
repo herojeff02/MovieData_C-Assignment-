@@ -152,8 +152,8 @@ int integrityMovie(){
     else{
         fp = fopen(movieFile, "r");
     }
-    char line[LINE_LENGTH] = {};
-    char genLine[LINE_LENGTH] = {};
+    char line[LINE_LENGTH];
+    char genLine[LINE_LENGTH];
     int i=0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         while(!((movies + i)->enabled)){
@@ -188,8 +188,8 @@ int integrityTag(){
     else{
         fp = fopen(tagFile, "r");
     }
-    char line[LINE_LENGTH] = {};
-    char genLine[LINE_LENGTH] = {};
+    char line[LINE_LENGTH];
+    char genLine[LINE_LENGTH];
     int i=0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         while(!((tags + i)->enabled)){
@@ -218,8 +218,8 @@ int integrityUser(){
     else{
         fp = fopen(userFile, "r");
     }
-    char line[LINE_LENGTH] = {};
-    char genLine[LINE_LENGTH] = {};
+    char line[LINE_LENGTH];
+    char genLine[LINE_LENGTH];
     int i=0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         while(!((users + i)->enabled)){
@@ -258,8 +258,8 @@ int integrityFavourite(){
     else{
         fp = fopen(favouriteFile, "r");
     }
-    char line[LINE_LENGTH] = {};
-    char genLine[LINE_LENGTH] = {};
+    char line[LINE_LENGTH];
+    char genLine[LINE_LENGTH];
     int i=0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         while(!((favourites + i)->enabled)){
