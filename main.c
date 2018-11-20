@@ -32,7 +32,6 @@ typedef struct {
     short sizeof_genre;
     short enabled;
 }Movie;
-
 typedef struct {
     int userID;
     int movieID;
@@ -40,13 +39,11 @@ typedef struct {
     long long timestamp;
     short enabled;
 }Tag;
-
 typedef struct {
     int userID;
     int movieID;
     short enabled;
 }Favourite;
-
 typedef struct {
      int userID;
      char *userName;
@@ -79,8 +76,7 @@ char *split_front(char *str, const char *delim) {
         return str;
     }
 }
-char *split_back(char *str, const char *delim)
-{
+char *split_back(char *str, const char *delim){
     char *p = strstr(str, delim);
 
     if (p == NULL) {
@@ -105,10 +101,13 @@ void addFavourite();
 void removeFavourite();
 void searchByUserID(); //input: userID - output: all tags made by the user, movie info of tags, favourites list, movie info of favourites
 void searchByMovieTitle(); //input: title - output: genre, tags, releaseYear, favourited by whom?, similar movies
+void retire();
 
 //methods
 int genreIndex_ByString(char *genre);
 int* genreIndex_ByMovieID(int movieID);
+
+void testPrint();
 
 int addMovieEntity(int movieID, char *title, int releaseYear, int *genre, short genre_count);
 int addTagEntity(int userID, int movieID, char *tag, long long timestamp);
@@ -143,26 +142,7 @@ int* favouriteIndex_ByUserID(int userID); ////returns END_OF_INT_ARRAY at end of
 int* favouriteIndex_ByMovieID(int movieID); ////returns END_OF_INT_ARRAY at end of array
 int favouriteIndex_ByDoubleID(int userID, int movieID);
 
-void testPrint(){
-    if(movie_count != 0) {
-        for (int i = 0; i < movie_count; i++) {
-            printf("%d::%s (%d)::", (movies + i)->movieID, (movies + i)->title, (movies + i)->releaseYear);
-            for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
-                printf("%s|", genreList[*((movies + i)->genre + j)]);
-            }
-            printf("\b\n");
-        }
-    }
-
-    if(tag_count != 0) {
-        for (int i = 0; i < tag_count; i++) {
-            Tag temp = *(tags + i);
-            printf("%d::%d::%s::%lld\n", temp.userID, temp.movieID, temp.tag, temp.timestamp);
-        }
-    }
-}
-
-int integrity() { //implemented movie, tag
+int integrityMovie(){
     FILE *fp;
     if(testing_file){
         fp = fopen(testMovieFile, "r");
@@ -178,7 +158,6 @@ int integrity() { //implemented movie, tag
             i++;
         }
 
-//        strcpy(genLine, "");
         sprintf(genLine, "%d::%s (%d)::", ((movies + i)->movieID), (movies + i)->title, (movies + i)->releaseYear);
         for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
             strcat(genLine, genreList[*((movies + i)->genre + j)]);
@@ -189,32 +168,86 @@ int integrity() { //implemented movie, tag
         strcat(genLine, "\n");
         if(strcmp(line, genLine)) {
             printf("%s\n", line);
-            printf("%s\n",genLine);
-            printf("i : %d\n",i);
-//            return 1;
+            printf("%s\n", genLine);
+            printf("i : %d\n", i);
+            return 1;
         }
         i++;
-//        strcpy(line, "");
     }
 
     fclose(fp);
     return 0;
 }
+int integrityTag(){
+    FILE *fp;
+    if(testing_file){
+        fp = fopen(testTagFile, "r");
+    }
+    else{
+        fp = fopen(tagFile, "r");
+    }
+    char line[1000];
+    char genLine[1000];
+    int i=0;
+    while (fgets(line, sizeof(line) - 1, fp) != NULL) {
+        while(!((tags + i)->enabled)){
+            i++;
+        }
+
+        Tag temp = *(tags + i);
+        sprintf(genLine, "%d::%d::%s::%lld\n", temp.userID, temp.movieID, temp.tag, temp.timestamp);
+        if(strcmp(line, genLine)) {
+            printf("%s\n", line);
+            printf("%s\n", genLine);
+            printf("i : %d\n", i);
+            return 1;
+        }
+        i++;
+    }
+
+    fclose(fp);
+    return 0;
+}
+int integrityUser(){
+    return 0;
+}
+int integrityFavourite(){
+    return 0;
+}
+int integrity() { //returns 1 when there's a problem
+    if(!integrityMovie()){
+        if(!integrityTag()){
+            if(!integrityUser()){
+                if(!integrityFavourite()){
+                    return 0;
+                }
+                printf("\n---integrity fault with favourite---\n");
+                return 1;
+            }
+            printf("\n---integrity fault with user---\n");
+            return 1;
+        }
+        printf("\n---integrity fault with tag---\n");
+        return 1;
+    }
+    printf("\n---integrity fault with movie---\n");
+    return 1;
+}
 
 int main(){
     init();
-    printf("%d, %s, %s, %d|%d|%d|%d", users->userID, users->userName, users->password, users->favouriteIndex+0,users->favouriteIndex+1,users->favouriteIndex+2,users->favouriteIndex+3);
-    save();
-
-
     if(integrity()){
-        printf("something is seriously wrong with the data");
+        printf("Error occured while reading file. Please check file content.");
+    }
+    save();
+    if(integrity()){
+        printf("Error occured while saving file. Please check file content.");
     }
 
-    free(movies);
-    free(tags);
+    retire();
     return 0;
 }
+
 void initMovie(){
     genreList[0] = "Action";
     genreListCursor=1;
@@ -390,11 +423,14 @@ void initUser(){
     user_count = index;
     fclose(fp);
 }
+void initFavourite(){
 
+}
 void init() {
     initMovie();
     initTag();
     initUser();
+    initFavourite();
 }
 
 void saveUser(){
@@ -446,10 +482,33 @@ void saveTag(){
 
     fclose(fp2);
 }
+void saveFavourite(){
+
+}
 void save(){
     saveMovie();
     saveTag();
     saveUser();
+    saveFavourite();
+}
+
+void testPrint(){
+    if(movie_count != 0) {
+        for (int i = 0; i < movie_count; i++) {
+            printf("%d::%s (%d)::", (movies + i)->movieID, (movies + i)->title, (movies + i)->releaseYear);
+            for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
+                printf("%s|", genreList[*((movies + i)->genre + j)]);
+            }
+            printf("\b\n");
+        }
+    }
+
+    if(tag_count != 0) {
+        for (int i = 0; i < tag_count; i++) {
+            Tag temp = *(tags + i);
+            printf("%d::%d::%s::%lld\n", temp.userID, temp.movieID, temp.tag, temp.timestamp);
+        }
+    }
 }
 
 int genreIndex_ByString(char *genre){
@@ -488,6 +547,13 @@ int genreIndex_ByString(char *genre){
 //    }
 //    return;
 //}
+
+void retire(){
+    free(movies);
+    free(tags);
+    free(users);
+    free(favourites);
+}
 
 int getnum() {
     int num = 0;
@@ -530,7 +596,6 @@ int movieIDExists(int movieID){
     }
     return 0;
 }
-
 int movieIndexExists(int index){
     if(index<movie_count) {
         return 1;
