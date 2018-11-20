@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <time.h>
 
 #define END_OF_INT_ARRAY -500
 
@@ -13,6 +14,7 @@
 #define SUCCESS -1000
 
 #define TEST_FILE_FLAG 1
+#define LINE_LENGTH 1000
 
 #define testTagFile "testtags.dat"
 #define testMovieFile "testmovies.dat"
@@ -150,8 +152,8 @@ int integrityMovie(){
     else{
         fp = fopen(movieFile, "r");
     }
-    char line[1000];
-    char genLine[1000];
+    char line[LINE_LENGTH] = {};
+    char genLine[LINE_LENGTH] = {};
     int i=0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         while(!((movies + i)->enabled)){
@@ -186,8 +188,8 @@ int integrityTag(){
     else{
         fp = fopen(tagFile, "r");
     }
-    char line[1000];
-    char genLine[1000];
+    char line[LINE_LENGTH] = {};
+    char genLine[LINE_LENGTH] = {};
     int i=0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         while(!((tags + i)->enabled)){
@@ -209,9 +211,74 @@ int integrityTag(){
     return 0;
 }
 int integrityUser(){
+    FILE *fp;
+    if(TEST_FILE_FLAG){
+        fp = fopen(testUserFile, "r");
+    }
+    else{
+        fp = fopen(userFile, "r");
+    }
+    char line[LINE_LENGTH] = {};
+    char genLine[LINE_LENGTH] = {};
+    int i=0;
+    while (fgets(line, sizeof(line) - 1, fp) != NULL) {
+        while(!((users + i)->enabled)){
+            i++;
+        }
+
+        sprintf(genLine, "%d::%s::%s::", (users + i)->userID, (users + i)->userName, (users + i)->password);
+        for (int j = 0; j < (users + i)->sizeof_favourites; j++) {
+            char a[2];
+            a[0] = *(((users + i)->favouriteIndex) + j) + '0';
+            a[1] = '\0';
+            strcat(genLine, a);
+            if (j != ((users + i)->sizeof_favourites) - 1) {
+                strcat(genLine, "|");
+            }
+        }
+        strcat(genLine, "\n");
+        if(strcmp(line, genLine)) {
+            printf("%s\n", line);
+            printf("%s\n", genLine);
+            printf("i : %d\n", i);
+            return 1;
+        }
+        i++;
+    }
+
+    fclose(fp);
+
     return 0;
 }
 int integrityFavourite(){
+    FILE *fp;
+    if(TEST_FILE_FLAG){
+        fp = fopen(testFavouriteFile, "r");
+    }
+    else{
+        fp = fopen(favouriteFile, "r");
+    }
+    char line[LINE_LENGTH] = {};
+    char genLine[LINE_LENGTH] = {};
+    int i=0;
+    while (fgets(line, sizeof(line) - 1, fp) != NULL) {
+        while(!((favourites + i)->enabled)){
+            i++;
+        }
+
+        sprintf(genLine, "%d::%d", (favourites + i)->userID, (favourites + i)->movieID);
+        strcat(genLine, "\n");
+        if(strcmp(line, genLine)) {
+            printf("%s\n", line);
+            printf("%s\n", genLine);
+            printf("i : %d\n", i);
+            return 1;
+        }
+        i++;
+    }
+
+    fclose(fp);
+
     return 0;
 }
 int integrity() { //returns 1 when there's a problem.
@@ -235,16 +302,23 @@ int integrity() { //returns 1 when there's a problem.
 }
 
 int main(){
+    clock_t t;
+    t = clock();
+
     init();
     if(integrity()){
-        printf("Error occured while reading file. Please check file content.");
+        printf("Error occured while reading file. Please check file content.\n");
     }
     save();
     if(integrity()){
-        printf("Error occured while saving file. Please check file content.");
+        printf("Error occured while saving file. Please check file content.\n");
     }
-
     retire();
+
+    t = clock() - t;
+    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+    printf("execution time : %lf seconds", time_taken);
+
     return 0;
 }
 
@@ -263,7 +337,7 @@ void initMovie(){
     else{
         fp = fopen(movieFile, "r");
     }
-    char line[1000];
+    char line[LINE_LENGTH];
     int index = 0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         movies = (Movie *) realloc(movies, (index + 1) * sizeof(Movie));
@@ -315,7 +389,7 @@ void initMovie(){
 }
 void initTag(){
     FILE *fp;
-    char line[1000];
+    char line[LINE_LENGTH];
     int index = 0;
 
     //init tag
@@ -364,7 +438,7 @@ void initTag(){
 void initUser(){
     users = malloc(sizeof(User));
     FILE *fp;
-    char line[1000];
+    char line[LINE_LENGTH];
     int index = 0;
 
     if (TEST_FILE_FLAG){
@@ -424,7 +498,40 @@ void initUser(){
     fclose(fp);
 }
 void initFavourite(){
+    FILE *fp;
+    char line[LINE_LENGTH];
+    int index = 0;
 
+    //init tag
+    favourites = (Favourite *) malloc(sizeof(Favourite));
+
+    if (TEST_FILE_FLAG){
+        fp = fopen(testFavouriteFile, "r");
+    }
+    else{
+        fp = fopen(favouriteFile, "r");
+    }
+    index = 0;
+    while(fgets(line, sizeof(line) - 1, fp) != NULL){
+        favourites = (Favourite *) realloc(favourites, (index+1) * sizeof(Favourite));
+
+        char *split1 = split_back(line, "::");
+        char *split0 = split_front(line, "::");
+
+        //0
+        (favourites+index) -> userID = atoi(split0);
+
+        //1
+        (favourites+index) -> movieID = atoi(split1);
+
+        (favourites+index) -> enabled = 1;
+
+        index++;
+    }
+    fclose(fp);
+
+    favourite_count = index;
+    return;
 }
 void init() {
     initMovie();
@@ -506,7 +613,24 @@ void saveTag(){
     fclose(fp2);
 }
 void saveFavourite(){
+    FILE *fp2;
+    if(TEST_FILE_FLAG){
+        fp2 = fopen(testFavouriteFile, "w");
+    }
+    else{
+        fp2 = fopen(favouriteFile, "w");
+    }
 
+    if(tag_count != 0) {
+        for (int i = 0; i < favourite_count; i++) {
+            if((favourites+i)->enabled) {
+                Favourite temp = *(favourites + i);
+                fprintf(fp2, "%d::%d\n", temp.userID, temp.movieID);
+            }
+        }
+    }
+
+    fclose(fp2);
 }
 void save(){
     saveMovie();
