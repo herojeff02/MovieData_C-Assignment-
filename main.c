@@ -1,3 +1,4 @@
+#pragma warning(disable:4996)
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -47,12 +48,12 @@ typedef struct {
     short enabled;
 }Favourite;
 typedef struct {
-     int userID;
-     char *userName;
-     char *password;//yup, plaintext password right here.
-     int *favouriteIndex;
-     short enabled;
-     int sizeof_favourites;
+    int userID;
+    char *userName;
+    char *password;//yup, plaintext password right here.
+    int *favouriteIndex;
+    short enabled;
+    int sizeof_favourites;
 }User;
 
 Movie *movies;
@@ -142,7 +143,6 @@ int* tagIndex_ByUserID(int userID); ////returns END_OF_INT_ARRAY at end of array
 int* tagIndex_ByMovieID(int movieID); ////returns END_OF_INT_ARRAY at end of array
 int* tagIndex_ByDoubleID(int userID, int movieID); ////returns END_OF_INT_ARRAY at end of array
 int* tagIndex_ByTag(char *tag); ////returns END_OF_INT_ARRAY at end of array
-
 int* favouriteIndex_ByUserID(int userID); ////returns END_OF_INT_ARRAY at end of array
 int* favouriteIndex_ByMovieID(int movieID); ////returns END_OF_INT_ARRAY at end of array
 int favouriteIndex_ByDoubleID(int userID, int movieID);
@@ -659,25 +659,25 @@ int genreIndex_ByString(char *genre){
     return i;
 }
 
-//void menu() {
-//    int key = 0;
-//    while ((key = selectMenu()) != 0)
-//    {
-//        switch (key)
-//        {
-//            case 1: addMovie(); break;
-//            case 2: removeMovie(); break;
-//            case 3: addTag(); break;
-//            case 4: removeTag(); break;
-//            case 5: addFavourite(); break;
-//            case 6: searchByUserID(); break;
-//            case 7: searchByMovieTitle(); break;
-//            case 0: close(); break;
-//            default: printf("No number.\n"); break;
-//        }
-//    }
-//    return;
-//}
+void menu() {
+    int key = 0;
+    while ((key = selectMenu()) != 0)
+    {
+        switch (key)
+        {
+            case 1: addMovie(); break;
+            case 2: removeMovie(); break;
+            case 3: addTag(); break;
+            case 4: removeTag(); break;
+            case 5: addFavourite(); break;
+            case 6: searchByUserID(); break;
+            case 7: searchByMovieTitle(); break;
+            case 0: close(); break;
+            default: printf("No number.\n"); break;
+        }
+    }
+    return;
+}
 
 void retire(){
     free(movies);
@@ -700,6 +700,35 @@ int selectMenu() {
            "5: Add favourite \n6: Search by user ID \n"
            "7: Search by movie title \n0: Close\n");
     return getnum();
+}
+
+void addMovie() {
+
+}
+
+void removeMovie() {
+
+}
+void addTag() {
+
+}
+void removeTag() {
+
+}
+void addFavourite() {
+
+}
+void searchByUserID() {
+    int searchUserID;
+    printf("User ID to search: ");
+    scanf("%d",&searchUserID);
+
+}
+void searchByMovieTitle() {
+    char *searchMovieTitle;
+    printf("Movie title to search: ");
+    scanf(" %s",searchMovieTitle);
+
 }
 
 void close(){
@@ -742,7 +771,7 @@ int addMovieEntity(int movieID, char *title, int releaseYear, int *genre, short 
         return FAIL_INVALID_YEAR;
     }
 
-    movies = (Movie *) realloc(movies, (movie_count) * sizeof(Movie));
+    movies = (Movie *) realloc(movies, (movie_count+1) * sizeof(Movie));
 
     //0
     (movies + movie_count)->movieID = movieID;
@@ -766,6 +795,7 @@ int addMovieEntity(int movieID, char *title, int releaseYear, int *genre, short 
     return SUCCESS;
 }
 int addTagEntity(int userID, int movieID, char *tag, long long timestamp){
+    tags = (Tag *) realloc(tags, (tag_count+1) * sizeof(Tag));
     //0
     (tags+tag_count) -> userID = userID;
 
@@ -785,7 +815,34 @@ int addTagEntity(int userID, int movieID, char *tag, long long timestamp){
     return SUCCESS;
 }
 int addUserEntity(int userID, char *userName, char *password){
+    users = (User *) realloc(users, (user_count+1) * sizeof(User));
+    //0
+    (users+user_count) -> userID = userID;
 
+    //1
+    (users+user_count) -> userName = malloc((strlen(userName)+1)* sizeof(char));
+    strcpy((users+user_count) -> userName, userName);
+
+    //2
+    (users+user_count) -> password = malloc((strlen(password)+1)* sizeof(char));
+    strcpy((users+user_count) -> password, password);
+
+    (users+user_count) -> enabled = 1;
+
+    user_count++;
+    return SUCCESS;
+}
+
+int addFavouriteEntity(int userID, int movieID){
+    favourites = (Favourite *) realloc(favourites, (favourite_count+1) * sizeof(Favourite));
+
+    (favourites+favourite_count) -> userID = userID;
+    (favourites+favourite_count) -> movieID = movieID;
+
+    (favourites+favourite_count) -> enabled = 1;
+
+    favourite_count++;
+    return SUCCESS;
 }
 
 int deleteMovie_ByIndex(int index){
@@ -821,9 +878,20 @@ char* tolowerString(char *content){
 char* tolowerCapitalizer(char *content){
     char* returnArray = malloc(sizeof(char)+1);
     *(returnArray+0) = toupper(*content);
+    int bigFlag = 0;
     for(int i=1;i<strlen(content);i++){
         returnArray = realloc(returnArray, sizeof(char)*(i+1));
-        *(returnArray+i) = tolower(*(content+i));
+        if(!bigFlag) {
+            *(returnArray + i) = tolower(*(content + i));
+        }
+        else{
+            *(returnArray + i) = toupper(*(content + i));
+            bigFlag = 0;
+        }
+
+        if(*(returnArray + i) == '-'){
+            bigFlag = 1;
+        }
     }
     returnArray = realloc(returnArray, sizeof(char)*strlen(content)+1);
     *(returnArray+strlen(content)) = '\0';
@@ -976,59 +1044,4 @@ int main(){
     printf("execution time : %lf seconds", time_taken);
 
     return 0;
-}
-
-void addMovie() {
-    int num = 0;
-    Movie *movieEntity;
-    movieEntity = (Movie *)malloc(sizeof(Movie));
-
-    printf("Movie ID to add: ");
-    scanf("%d", &movieEntity->movieID);
-    getchar();
-    printf("Title: ");
-    int i = 1;
-    while (1)
-    {
-        movieEntity->title = (char *)malloc(sizeof(char)*i);
-        char input=getchar();
-        i++;
-
-        if (input == '\n')
-            break;
-    }
-    printf("Release year: ");
-    scanf("%d", &movieEntity->releaseYear);
-    printf("How many genre do you want add: ");
-    scanf(" %hd", &movieEntity->sizeof_genre);
-
-    movieEntity->genre = (int *)malloc(sizeof(int)*movieEntity->sizeof_genre);
-    for (int i = 0; i < movieEntity->sizeof_genre; i++)
-    {
-        char *inputGenre;
-        inputGenre = (char *)malloc(sizeof(char));
-        printf("Genre %d: ", i);
-        scanf(" %s", inputGenre);
-        *((movieEntity->genre)+i) = genreIndex_ByString(inputGenre);
-    }
-
-    int result = addMovieEntity(movieEntity->movieID, movieEntity->title, movieEntity->releaseYear, movieEntity->genre, movieEntity->sizeof_genre);
-
-    if (result == SUCCESS)
-    {
-        printf("Add successfully!");
-        return;
-    }
-
-    else if (result == FAIL_MOVIE_ID_ALREADY_EXISTS)
-    {
-        printf("Already exist movie");
-        return;
-    }
-
-    else if (result == FAIL_INVALID_YEAR)
-    {
-        printf("Invalid year");
-        return;
-    }
 }
