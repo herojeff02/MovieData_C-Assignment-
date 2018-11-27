@@ -105,6 +105,9 @@ void searchByUserID(); //input: userID - output: all tags made by the user, movi
 void searchByMovieTitle(); //input: title - output: genre, tags, releaseYear, favourited by whom?, similar movies
 void retire();
 
+char* tolowerString(char* content);
+char* tolowerCapitalizer(char* content);
+
 //methods
 int genreIndex_ByString(char *genre);
 int* genreIndex_ByMovieID(int movieID);
@@ -299,27 +302,6 @@ int integrity() { //returns 1 when there's a problem.
     }
     printf("\n---integrity fault with movie---\n");
     return 1;
-}
-
-int main(){
-    clock_t t;
-    t = clock();
-
-    init();
-    if(integrity()){
-        printf("Error occured while reading file. Please check file content.\n");
-    }
-    save();
-    if(integrity()){
-        printf("Error occured while saving file. Please check file content.\n");
-    }
-    retire();
-
-    t = clock() - t;
-    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
-    printf("execution time : %lf seconds", time_taken);
-
-    return 0;
 }
 
 void initMovie(){
@@ -661,6 +643,7 @@ void testPrint(){
 int genreIndex_ByString(char *genre){
     int flag=1;
     int i;
+    strcpy(genre, tolowerCapitalizer(genre));
     for (i = 0; i < genreListCursor; i++) {
         if (!strcmp(genre, *(genreList+i))) {
             flag=0;
@@ -835,6 +818,17 @@ char* tolowerString(char *content){
     *(returnArray+strlen(content)) = '\0';
     return returnArray;
 }
+char* tolowerCapitalizer(char *content){
+    char* returnArray = malloc(sizeof(char)+1);
+    *(returnArray+0) = toupper(*content);
+    for(int i=1;i<strlen(content);i++){
+        returnArray = realloc(returnArray, sizeof(char)*(i+1));
+        *(returnArray+i) = tolower(*(content+i));
+    }
+    returnArray = realloc(returnArray, sizeof(char)*strlen(content)+1);
+    *(returnArray+strlen(content)) = '\0';
+    return returnArray;
+}
 
 int* movieIndex_ByTitle(char *title){
     int *returnArray = malloc(sizeof(int));
@@ -961,3 +955,80 @@ int* tagIndex_ByTag(char *tag){
 int* favouriteIndex_ByUserID(int userID);
 int* favouriteIndex_ByMovieID(int movieID);
 int favouriteIndex_ByDoubleID(int userID, int movieID);
+
+int main(){
+    clock_t t;
+    t = clock();
+
+    init();
+    addMovie();
+    if(integrity()){
+        printf("Error occured while reading file. Please check file content.\n");
+    }
+    save();
+    if(integrity()){
+        printf("Error occured while saving file. Please check file content.\n");
+    }
+    retire();
+
+    t = clock() - t;
+    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+    printf("execution time : %lf seconds", time_taken);
+
+    return 0;
+}
+
+void addMovie() {
+    int num = 0;
+    Movie *movieEntity;
+    movieEntity = (Movie *)malloc(sizeof(Movie));
+
+    printf("Movie ID to add: ");
+    scanf("%d", &movieEntity->movieID);
+    getchar();
+    printf("Title: ");
+    int i = 1;
+    while (1)
+    {
+        movieEntity->title = (char *)malloc(sizeof(char)*i);
+        char input=getchar();
+        i++;
+
+        if (input == '\n')
+            break;
+    }
+    printf("Release year: ");
+    scanf("%d", &movieEntity->releaseYear);
+    printf("How many genre do you want add: ");
+    scanf(" %hd", &movieEntity->sizeof_genre);
+
+    movieEntity->genre = (int *)malloc(sizeof(int)*movieEntity->sizeof_genre);
+    for (int i = 0; i < movieEntity->sizeof_genre; i++)
+    {
+        char *inputGenre;
+        inputGenre = (char *)malloc(sizeof(char));
+        printf("Genre %d: ", i);
+        scanf(" %s", inputGenre);
+        *((movieEntity->genre)+i) = genreIndex_ByString(inputGenre);
+    }
+
+    int result = addMovieEntity(movieEntity->movieID, movieEntity->title, movieEntity->releaseYear, movieEntity->genre, movieEntity->sizeof_genre);
+
+    if (result == SUCCESS)
+    {
+        printf("Add successfully!");
+        return;
+    }
+
+    else if (result == FAIL_MOVIE_ID_ALREADY_EXISTS)
+    {
+        printf("Already exist movie");
+        return;
+    }
+
+    else if (result == FAIL_INVALID_YEAR)
+    {
+        printf("Invalid year");
+        return;
+    }
+}
