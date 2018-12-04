@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "append.h"
 #include "dataType.h"
 #include "save.h"
@@ -42,7 +43,7 @@ int addMovieEntity(int movie_id, char *title, int release_year, int *genre, shor
     initMovie();
     return SUCCESS;
 }
-int addTagEntity(int user_id, int movie_id, char *tag, long long timestamp){
+int addTagEntity(int user_id, int movie_id, char *tag){
     tags = (Tag *) realloc(tags, (tag_count+1) * sizeof(Tag));
     //0
     (tags+tag_count) -> user_id = user_id;
@@ -55,7 +56,7 @@ int addTagEntity(int user_id, int movie_id, char *tag, long long timestamp){
     strcpy((tags+tag_count) -> tag, tag);
 
     //3
-    (tags+tag_count) -> timestamp = timestamp;
+    (tags+tag_count) -> timestamp = time(NULL);
 
     (tags+tag_count) -> enabled = 1;
 

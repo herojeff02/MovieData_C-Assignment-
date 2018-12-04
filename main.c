@@ -271,29 +271,8 @@ void addTag() {
     printf("Tag: ");
     ////modify here
     scanf(" %s",tagEntity->tag);
-    while (1) {
-        long long temp;
-        printf("timestamp to add: ");
-        scanf(" %s", timestampEntity);
-        for (int i = 0; i < strlen(timestampEntity); i++) {
-            if(isdigit (*timestampEntity+i)==0) {
-                printf("It is not number\n");
-                break;
-            }
-        }
-        int cnt=0;
-        for(int i=0; i < strlen(timestampEntity); i++) {
-            if(isdigit (*timestampEntity+i)!=0)
-                cnt++;
-        }
-        if(cnt==strlen(timestampEntity) &&cnt!=0) {
-            temp=atoi(timestampEntity);
-            tagEntity -> timestamp = temp;
-            break;
-        }
-    }
 
-    int resultData=addTagEntity(tagEntity->user_id, tagEntity->movie_id, tagEntity->tag, tagEntity->timestamp);
+    int resultData=addTagEntity(tagEntity->user_id, tagEntity->movie_id, tagEntity->tag);
 
     if (resultData==SUCCESS)
     {
