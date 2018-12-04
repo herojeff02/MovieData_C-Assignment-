@@ -36,9 +36,9 @@ int* movieIndex_ByTitle(char *title){
 
 int genreIndex_ByString(char *genre){
     int flag=1;
-    int i;
+    int i=0;
     strcpy(genre, tolowerCapitalizer(genre));
-    for (i = 0; i < genre_list_cursor; i++) {
+    for (; i < genre_list_cursor; i++) {
         if (!strcmp(genre, *(genre_list+i))) {
             flag=0;
             break;

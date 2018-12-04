@@ -48,27 +48,36 @@ void initMovie(){
         strcpy((movies + index)->title, split1);
 
         //2
-        split2 = strtok(split2, "\n");
-        int cnt;
         (movies + index)->genre = (int *) malloc(sizeof(int));
-        if (strstr(split2, "|")) {
-            cnt = 0;
-            char *genre_split = strtok(split2, "|");
-            while (genre_split != NULL) {
-                (movies + index)->genre = realloc((movies + index)->genre, (cnt + 1) * sizeof(int));
-                *(((movies + index)->genre) + cnt) = genreIndex_ByString(genre_split);
-                genre_split = strtok(NULL, "|");
-                cnt++;
-            }
-            (movies + index)->sizeof_genre = cnt;
-        } else {
-            *(((movies + index)->genre)) = genreIndex_ByString(split2);
+
+        if(!strcmp(split2, "\n")){
+            char arr[20] = "(no genres listed)";
+            *((movies + index)->genre) = genreIndex_ByString(arr);
             (movies + index)->sizeof_genre = 1;
         }
+        else{
+            split2 = strtok(split2, "\n");
 
+            short cnt;
+            if (strstr(split2, "|")) {
+                cnt = 0;
+                char *genre_split = strtok(split2, "|");
+                while (genre_split != NULL) {
+                    (movies + index)->genre = realloc((movies + index)->genre, (cnt + 1) * sizeof(int));
+                    *(((movies + index)->genre) + cnt) = genreIndex_ByString(genre_split);
+                    genre_split = strtok(NULL, "|");
+                    cnt++;
+                }
+                (movies + index)->sizeof_genre = cnt;
+            } else {
+                *(((movies + index)->genre)) = genreIndex_ByString(split2);
+                (movies + index)->sizeof_genre = 1;
+            }
+        }
         (movies+index) -> enabled = 1;
 
         index++;
+
     }
     fclose(fp);
 
