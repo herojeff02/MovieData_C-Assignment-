@@ -30,13 +30,24 @@ void searchByUserID(); //input: user_id - output: all tags made by the user, mov
 void searchByMovieTitle(); //input: title - output: genre, tags, release_year, favourited by whom?, similar movies
 void retire();
 
-//methods
+void printAllTag(int movie_id);
+void printMovieInfo(int movie_id);
+void printTag(int index);
 
+//methods
+void startTimer();
+void endTimer();
 void testPrint();
 
-void printMovieInfo(int movie_id);
-void printAllTag(int movie_id);
-void printTag(int index);
+clock_t t;
+void startTimer(){
+    t = clock();
+}
+void endTimer(){
+    t = clock() - t;
+    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+    printf("execution time : %lf seconds", time_taken);
+}
 
 void testPrint(){
     if(movie_count != 0) {
@@ -64,29 +75,6 @@ void retire(){
     free(favourites);
 }
 
-int main(){
-    clock_t t;
-    t = clock();
-
-    init();
-    addFavourite();
-//addUserEntity(30000, "user_name", "1524124");
-//addFavouriteEntity();
-    if(integrity()){
-        printf("Error occured while reading file. Please check file content.\n");
-    }
-    save();
-    if(integrity()){
-        printf("Error occured while saving file. Please check file content.\n");
-    }
-    retire();
-
-    t = clock() - t;
-    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
-    printf("execution time : %lf seconds", time_taken);
-
-    return 0;
-}
 
 void addMovie() {
     Movie *movieEntity;
@@ -605,9 +593,7 @@ void searchByMovieTitle() {
 
 void close(){
     save();
-    if(!integrity()){
-        retire();
-    }
+    integrity();
     exit(0);
 }
 
@@ -634,4 +620,28 @@ void menu() {
         }
     }
     return;
+}
+
+int main(){
+//    startTimer();
+//
+//    init();
+//    addFavourite();
+////addUserEntity(30000, "user_name", "1524124");
+////addFavouriteEntity();
+//    if(integrity()){
+//        printf("Error occured while reading file. Please check file content.\n");
+//    }
+//    save();
+//    if(integrity()){
+//        printf("Error occured while saving file. Please check file content.\n");
+//    }
+//    retire();
+//    endTimer();
+
+    int result = forcedIntegerInput(10);
+    printf("%d", result);
+
+
+    return 0;
 }

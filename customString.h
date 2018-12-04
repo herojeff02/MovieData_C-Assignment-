@@ -9,5 +9,7 @@ char* tolowerString(char* content);
 char* tolowerCapitalizer(char* content);
 char *split_front(char *str, const char *delim);
 char *split_back(char *str, const char *delim);
+int forcedIntegerInput(int figures);
+int stringIncludesMarker(char *string);
 
 #endif //MOVIEDATA_C_ASSIGNMENT_CUSTOMSTRING_H

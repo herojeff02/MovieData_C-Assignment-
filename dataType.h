@@ -19,14 +19,19 @@
 
 #define END_OF_INT_ARRAY -500
 
+#define SUCCESS -1000
+
 #define FAIL_MOVIE_ID_ALREADY_EXISTS -2000
 #define FAIL_USER_ID_ALREADY_EXISTS -4000
-#define FAIL_NO_SUCH_USER_ID -7000
+#define FAIL_NO_SUCH_USER_ID -3000
 #define FAIL_NO_SUCH_MOVIE_ID -5000
 #define FAIL_NO_SUCH_INDEX -6000
-#define FAIL_INVALID_YEAR -3000
 
-#define SUCCESS -1000
+#define FAIL_INVALID_YEAR -7000
+#define FAIL_TOO_MANY_FIGURES -9000
+#define FAIL_NOT_A_NUMBER -8000
+#define FAIL_LACK_OF_FIGURES -10000
+
 
 typedef struct{
     //please do not add more than 2 billion movies. You're not going to, are you?

@@ -5,8 +5,41 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <math.h>
 #include "customString.h"
 #include "dataType.h"
+
+int stringIncludesMarker(char *string){ //Wait, wrong method name here.
+    if(strstr(string, "::")==NULL)
+        return 0;
+    else
+        return 1;
+}
+int forcedIntegerInput(int figures){
+    int result=0;
+    while (1){
+        char temp = getchar();
+        if(temp == '\n'){
+            break;
+        }
+        else if(isdigit(temp)){
+            result = result*10 + (temp - '0');
+        }
+        else{
+            return FAIL_NOT_A_NUMBER;
+        }
+    }
+    if(result>=pow(10.0, figures)){
+        return FAIL_TOO_MANY_FIGURES;
+    }
+    else if(result<pow(10.0, figures-1)){
+        return FAIL_LACK_OF_FIGURES;
+    }
+    else{
+        return result;
+    }
+}
 
 char* tolowerString(char *content){
     char* return_array = malloc(sizeof(char));
