@@ -15,7 +15,6 @@ int movieIDExists(int movie_id){
     return 0;
 }
 int movieIndexExists(int index){
-    ////revise to check "enabled"
     if(index<movie_count) {
         return 1;
     }
@@ -23,9 +22,9 @@ int movieIndexExists(int index){
 }
 
 ////check code from here
-int userIDExists(int userID) {
+int userIDExists(int user_id) {
     for (int i = 0; i < user_count; i++) {
-        if ((users + i)->user_id == userID) {
+        if ((users + i)->user_id == user_id) {
             return 1;
         }
     }
@@ -37,9 +36,9 @@ int userIndexExists(int index) {
     }
     return 0;
 }
-int favouriteIDExists(int userID) {
+int favouriteUserIDExists(int user_id) {
     for (int i = 0; i < favourite_count; i++) {
-        if ((favourites + i)->user_id == userID) {
+        if ((favourites + i)->user_id == user_id) {
             return 1;
         }
     }

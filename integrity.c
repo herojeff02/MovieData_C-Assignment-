@@ -163,3 +163,4 @@ int integrity() { //returns 1 when there's a problem.
     printf("\n---integrity fault with movie---\n");
     return 1;
 }
+

@@ -376,7 +376,7 @@ void removeFavourite() {
     while (1) {
         printf("User ID to remove favourite: ");
         scanf("%d", &favouriteRemove);
-        if (favouriteIDExists(favouriteRemove) == 1) {
+        if (favouriteUserIDExists(favouriteRemove) == 1) {
             break;
         }
         else {

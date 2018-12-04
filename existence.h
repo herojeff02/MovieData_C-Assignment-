@@ -7,11 +7,11 @@
 
 int movieIDExists(int movie_id);
 int movieIndexExists(int index);
-int userIDExists(int userID);
+int userIDExists(int user_id);
 int userIndexExists(int index);
 int userNameExists(char *name);
 int tagIndexExists(int index);
-int favouriteIDExists(int userID);
+int favouriteUserIDExists(int user_id);
 int favouriteIndexExists(int index);
 int movieTitleExists(char *title);
 

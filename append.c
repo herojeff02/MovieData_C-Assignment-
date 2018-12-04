@@ -36,6 +36,7 @@ int addMovieEntity(int movie_id, char *title, int release_year, int *genre, shor
         *(((movies + movie_count)->genre)+i) = *(genre+i);
     }
     (movies + movie_count)->sizeof_genre = genre_count;
+
     (movies + movie_count) -> enabled = 1;
 
     movie_count++;

@@ -28,8 +28,6 @@ int deleteTag_ByIndex(int index){
     return SUCCESS;
 }
 
-////check code from here
-
 int deleteFavourite_ByIndex(int index) {
     ////add favouriteIndexExists here
     if (!favouriteIndexExists(index)) {
