@@ -3,11 +3,11 @@ void addMovie() {
     movieEntity=(Movie *)malloc(sizeof(Movie));
 
     printf("Movie ID to add: ");
-    scanf("%d",&movieEntity->movieID);
+    scanf("%d",&movieEntity->movie_id);
     printf("Title: ");
     scanf(" %s",movieEntity->title);
     printf("Release year: ");
-    scanf("%d",&movieEntity->releaseYear);
+    scanf("%d",&movieEntity->release_year);
     printf("How many genre do you want to add: ");
     scanf("%hd",&movieEntity->sizeof_genre);
 
@@ -34,19 +34,19 @@ void addMovie() {
         int genreIndex_ByString(char *inputGenre);
     }
 
-    addMovieEntity(movieEntity->movieID, movieEntity->title, movieEntity->releaseYear, movieEntity->genre, movieEntity->sizeof_genre);
+    addMovieEntity(movieEntity->movie_id, movieEntity->title, movieEntity->release_year, movieEntity->genre, movieEntity->sizeof_genre);
 
-    if (addMovieEntity(movieEntity->movieID, movieEntity->title, movieEntity->releaseYear, movieEntity->genre, movieEntity->sizeof_genre)==SUCCESS)
+    if (addMovieEntity(movieEntity->movie_id, movieEntity->title, movieEntity->release_year, movieEntity->genre, movieEntity->sizeof_genre)==SUCCESS)
     {
         printf("ADD SUCCESSFULLY!!");
         return;
     }
-    else if (addMovieEntity(movieEntity->movieID, movieEntity->title, movieEntity->releaseYear, movieEntity->genre, movieEntity->sizeof_genre)==FAIL_MOVIE_ID_ALREADY_EXISTS)
+    else if (addMovieEntity(movieEntity->movie_id, movieEntity->title, movieEntity->release_year, movieEntity->genre, movieEntity->sizeof_genre)==FAIL_MOVIE_ID_ALREADY_EXISTS)
     {
         printf("Already exist movie");
         return;
     }
-    else if (addMovieEntity(movieEntity->movieID, movieEntity->title, movieEntity->releaseYear, movieEntity->genre, movieEntity->sizeof_genre)==FAIL_INVALID_YEAR)
+    else if (addMovieEntity(movieEntity->movie_id, movieEntity->title, movieEntity->release_year, movieEntity->genre, movieEntity->sizeof_genre)==FAIL_INVALID_YEAR)
     {
         printf("Invalid year");
         return;
@@ -65,17 +65,17 @@ void addTag() {
     tagEntity=(Tag *)malloc(sizeof(Tag));
 
     printf("User ID to add: ");
-    scanf("%d",&tagEntity->userID);
+    scanf("%d",&tagEntity->user_id);
     printf("Movie ID to add: ");
-    scanf("%d",&tagEntity->movieID);
+    scanf("%d",&tagEntity->movie_id);
     printf("Tag: ");
     scanf(" %s",tagEntity->tag);
     printf("Timestamp: ");
     scanf("%lld",&tagEntity->timestamp);
 
-    addTagEntity(tagEntity->userID, tagEntity->movieID, tagEntity->tag, tagEntity->timestamp);
+    addTagEntity(tagEntity->user_id, tagEntity->movie_id, tagEntity->tag, tagEntity->timestamp);
 
-    if (addTagEntity(tagEntity->userID, tagEntity->movieID, tagEntity->tag, tagEntity->timestamp)==SUCCESS)
+    if (addTagEntity(tagEntity->user_id, tagEntity->movie_id, tagEntity->tag, tagEntity->timestamp)==SUCCESS)
     {
         printf("ADD SUCCESSFULLY!!");
         return;
@@ -94,13 +94,13 @@ void addFavourite() {
     favouriteEntity=(Favourite *)malloc(sizeof(Favourite));
 
     printf("User ID to add: ");
-    scanf("%d",&favouriteEntity->userID);
+    scanf("%d",&favouriteEntity->user_id);
     printf("Movie ID to add: ");
-    scanf("%d",&favouriteEntity->movieID);
+    scanf("%d",&favouriteEntity->movie_id);
 
-    addFavouriteEntity(favouriteEntity->userID, favouriteEntity->movieID);
+    addFavouriteEntity(favouriteEntity->user_id, favouriteEntity->movie_id);
 
-    if (addFavouriteEntity(favouriteEntity->userID, favouriteEntity->movieID)==SUCCESS)
+    if (addFavouriteEntity(favouriteEntity->user_id, favouriteEntity->movie_id)==SUCCESS)
     {
         printf("ADD SUCCESSFULLY!!");
         return;
