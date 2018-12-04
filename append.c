@@ -43,6 +43,13 @@ int addMovieEntity(int movie_id, char *title, int release_year, int *genre, shor
     initMovie();
     return SUCCESS;
 }
+int addGenre_ToMovie(int movie_index, char *genre){
+    (movies+movie_index)->genre = realloc((movies+movie_index)->genre, sizeof(int)*((movies+movie_index)->sizeof_genre+1));
+    int counter = (movies+movie_index)->sizeof_genre;
+    *(((movies+movie_index) -> genre) + counter) = genreIndex_ByString(genre);
+
+    (movies+movie_index)->sizeof_genre++;
+}
 int addTagEntity(int user_id, int movie_id, char *tag){
     tags = (Tag *) realloc(tags, (tag_count+1) * sizeof(Tag));
     //0
@@ -96,14 +103,14 @@ int addFavouriteEntity(int user_id, int movie_id){
     favourite_count++;
 
     int user_index = userIndex_ByUserID(user_id);
-    addToUserFavouriteIndex(user_index, movie_id);
+    (user_index, movie_id);
 
     return SUCCESS;
 }
-int addToUserFavouriteIndex(int user_index, int movieID){
+int addFavouriteIndex_ToUser(int user_index, int favourite_index){
     (users+user_index)->favourite_index = realloc((users+user_index)->favourite_index, sizeof(int)*((users+user_index)->sizeof_favourites+1));
-    int counter = (users+user_index)->sizeof_favourites;
-    *(((users+user_index) -> favourite_index) + counter) = movieID;
+    *(((users+user_index) -> favourite_index) + (users+user_index)->sizeof_favourites) = favourite_index;
 
     (users+user_index)->sizeof_favourites++;
+    return SUCCESS;
 }

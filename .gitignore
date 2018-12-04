@@ -46,3 +46,12 @@ cmake-build-debug/CMakeFiles/untitled.dir/DependInfo.cmake
 cmake-build-debug/CMakeFiles/untitled.dir/flags.make
 cmake-build-debug/CMakeFiles/untitled.dir/link.txt
 cmake-build-debug/CMakeFiles/untitled.dir/progress.make
+cmake-build-debug/CMakeFiles/MovieData_C_Assignment_.dir/append.c.o
+cmake-build-debug/CMakeFiles/MovieData_C_Assignment_.dir/customString.c.o
+cmake-build-debug/CMakeFiles/MovieData_C_Assignment_.dir/dataType.c.o
+cmake-build-debug/CMakeFiles/MovieData_C_Assignment_.dir/delete.c.o
+cmake-build-debug/CMakeFiles/MovieData_C_Assignment_.dir/existence.c.o
+cmake-build-debug/CMakeFiles/MovieData_C_Assignment_.dir/indexFinder.c.o
+cmake-build-debug/CMakeFiles/MovieData_C_Assignment_.dir/init.c.o
+cmake-build-debug/CMakeFiles/MovieData_C_Assignment_.dir/integrity.c.o
+cmake-build-debug/CMakeFiles/MovieData_C_Assignment_.dir/save.c.o

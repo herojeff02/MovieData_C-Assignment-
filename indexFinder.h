@@ -13,6 +13,7 @@ int userIndex_ByUserID(int user_id);
 
 int genreIndex_ByString(char *genre);
 int* genreIndex_ByMovieID(int movieID);
+char* string_ByGenreIndex(int genre);
 
 int* tagIndex_ByUserID(int user_id); ////returns END_OF_INT_ARRAY at end of array
 int* tagIndex_ByMovieID(int movie_id); ////returns END_OF_INT_ARRAY at end of array

@@ -52,6 +52,9 @@ int genreIndex_ByString(char *genre){
     }
     return i;
 }
+char* string_ByGenreIndex(int genre){
+    return *(genre_list+genre);
+}
 
 int compare(const void *first, const void *second){
     if (*(int*)first > *(int*)second)

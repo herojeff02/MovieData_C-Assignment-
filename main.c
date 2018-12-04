@@ -604,7 +604,7 @@ void menu() {
 int main(){
 //    startTimer();
 //
-//    init();
+    init();
 //    addFavourite();
 ////addUserEntity(30000, "user_name", "1524124");
 ////addFavouriteEntity();
@@ -618,9 +618,7 @@ int main(){
 //    retire();
 //    endTimer();
 
-    int result = forcedIntegerInput(10);
-    printf("%d", result);
-
+    printf("%s", string_ByGenreIndex(3));
 
     return 0;
 }
