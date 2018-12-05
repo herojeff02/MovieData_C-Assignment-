@@ -44,10 +44,17 @@ void saveMovie(){
     if(movie_count != 0) {
         for (int i = 0; i < movie_count; i++) {
             if ((movies + i)->enabled) {
+                int k = 0;
                 fprintf(fp1, "%d::%s (%d)::", (movies + i)->movie_id, (movies + i)->title, (movies + i)->release_year);
-                for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
+                if((movies + i)->sizeof_genre == 0){
+                    k=1;
+                }
+                else{
+                    k=(movies + i)->sizeof_genre;
+                }
+                for (int j = 0; j < k; j++) {
                     fprintf(fp1, "%s", genre_list[*((movies + i)->genre + j)]);
-                    if (j != ((movies + i)->sizeof_genre) - 1) {
+                    if (j != ((movies + i)->sizeof_genre) - 1 && (movies + i)->sizeof_genre != 0) {
                         fprintf(fp1, "|");
                     }
                 }

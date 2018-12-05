@@ -33,21 +33,37 @@ int* movieIndex_ByTitle(char *title){
     *(return_array+count) = END_OF_INT_ARRAY;
     return return_array;
 }
+int* movieIndex_ByMatchingTitle(char *title){
+    int *return_array = malloc(sizeof(int));
+    int count=0;
+    for(int i=0;i<movie_count;i++){
+        if(!strcmp(tolowerString((movies + i)->title), tolowerString(title))){
+            count++;
+            return_array = realloc(return_array, sizeof(int)*count);
+            *(return_array+count-1) = i;
+        }
+    }
+    return_array = realloc(return_array, sizeof(int)*(count+1));
+    *(return_array+count) = END_OF_INT_ARRAY;
+    return return_array;
+}
 
 int genreIndex_ByString(char *genre){
+    char *temp = malloc(sizeof(char)*strlen(genre));
+    strcpy(temp, genre);
     int flag=1;
     int i=0;
-    strcpy(genre, tolowerCapitalizer(genre));
+    strcpy(temp, tolowerCapitalizer(temp));
     for (; i < genre_list_cursor; i++) {
-        if (!strcmp(genre, *(genre_list+i))) {
+        if (!strcmp(temp, *(genre_list+i))) {
             flag=0;
             break;
         }
     }
     if(flag){
         genre_list = (char **)realloc(genre_list,sizeof(char*)*(genre_list_cursor+1));
-        *(genre_list+genre_list_cursor) = (char *) malloc(sizeof(char)*strlen(genre));
-        strcpy(*(genre_list+genre_list_cursor), genre);
+        *(genre_list+genre_list_cursor) = (char *) malloc(sizeof(char)*strlen(temp));
+        strcpy(*(genre_list+genre_list_cursor), temp);
         genre_list_cursor++;
     }
     return i;

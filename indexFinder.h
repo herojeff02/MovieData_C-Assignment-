@@ -6,6 +6,7 @@
 #define MOVIEDATA_C_ASSIGNMENT_INDEXFINDER_H
 
 int* movieIndex_ByTitle(char *title); ////returns END_OF_INT_ARRAY at end of array
+int* movieIndex_ByMatchingTitle(char *title); ////returns END_OF_INT_ARRAY at end of array
 int* movieIndex_ByGenre(int *genre, short genre_count); ////returns END_OF_INT_ARRAY at end of array
 int movieIndex_ByID(int movie_id);
 

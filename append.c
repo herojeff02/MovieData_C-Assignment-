@@ -31,11 +31,19 @@ int addMovieEntity(int movie_id, char *title, int release_year, int *genre, shor
     strcpy((movies + movie_count)->title, title);
 
     //2
-    (movies + movie_count)->genre = (int *) malloc(sizeof(int)*genre_count);
-    for(int i=0;i<genre_count;i++){
-        *(((movies + movie_count)->genre)+i) = *(genre+i);
+    if(genre_count!=0) {
+        (movies + movie_count)->genre = (int *) malloc(sizeof(int) * genre_count);
+        for (int i = 0; i < genre_count; i++) {
+            *(((movies + movie_count)->genre) + i) = *(genre + i);
+        }
+        (movies + movie_count)->sizeof_genre = genre_count;
     }
-    (movies + movie_count)->sizeof_genre = genre_count;
+    else{
+        *((movies + movie_count)->genre) = (int) malloc(sizeof(int));
+        char arr[] = "(no genres listed)";
+        *((movies + movie_count)->genre) = genreIndex_ByString(arr);
+        (movies + movie_count)->sizeof_genre = 0;
+    }
 
     (movies + movie_count) -> enabled = 1;
 
@@ -45,11 +53,36 @@ int addMovieEntity(int movie_id, char *title, int release_year, int *genre, shor
     return SUCCESS;
 }
 int addGenre_ToMovie(int movie_index, char *genre){
-    (movies+movie_index)->genre = realloc((movies+movie_index)->genre, sizeof(int)*((movies+movie_index)->sizeof_genre+1));
-    int counter = (movies+movie_index)->sizeof_genre;
-    *(((movies+movie_index) -> genre) + counter) = genreIndex_ByString(genre);
+    if((movies+movie_index)->sizeof_genre == 0){
+        *((movies+movie_index)->genre) = genreIndex_ByString(genre);
+        (movies+movie_index)->sizeof_genre = 1;
+    }
+    else{
+        short flag = 0;
+        int temp = genreIndex_ByString(genre);
+        for (int i = 0; i < (movies + movie_index)->sizeof_genre; ++i) {
+            if (*((movies + movie_index)->genre + i) == temp || *((movies + movie_index)->genre + i) == genreIndex_ByString("(no genres listed)")) {
+                flag = 1;
+            }
+        }
+        if(!flag) {
+            (movies + movie_index)->genre = realloc((movies + movie_index)->genre,
+                    sizeof(int) * ((movies + movie_index)->sizeof_genre + 1));
+            int counter = (movies + movie_index)->sizeof_genre;
+            *(((movies + movie_index)->genre) + counter) = genreIndex_ByString(genre);
 
-    (movies+movie_index)->sizeof_genre++;
+            (movies+movie_index)->sizeof_genre++;
+        }
+
+    }
+    saveMovie();
+    initMovie();
+}
+int removeGenre_FromMovie(int movie_index, char *genre){
+
+
+    saveMovie();
+    initMovie();
 }
 int addTagEntity(int user_id, int movie_id, char *tag){
     tags = (Tag *) realloc(tags, (tag_count+1) * sizeof(Tag));

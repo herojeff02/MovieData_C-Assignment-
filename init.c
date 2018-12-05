@@ -51,9 +51,8 @@ void initMovie(){
         (movies + index)->genre = (int *) malloc(sizeof(int));
 
         if(!strcmp(split2, "\n")){
-            char arr[] = "(no genres listed)";
-            *((movies + index)->genre) = genreIndex_ByString(arr);
-            (movies + index)->sizeof_genre = 1;
+            *((movies + index)->genre) = genreIndex_ByString("(no genres listed)");
+            (movies + index)->sizeof_genre = 0;
         }
         else{
             split2 = strtok(split2, "\n");

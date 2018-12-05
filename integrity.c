@@ -26,7 +26,7 @@ int integrityMovie(){
         sprintf(gen_line, "%d::%s (%d)::", ((movies + i)->movie_id), (movies + i)->title, (movies + i)->release_year);
         for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
             strcat(gen_line, genre_list[*((movies + i)->genre + j)]);
-            if (j != ((movies + i)->sizeof_genre) - 1) {
+            if (j != ((movies + i)->sizeof_genre) - 1 && (movies + i)->sizeof_genre != 0) {
                 strcat(gen_line, "|");
             }
         }
