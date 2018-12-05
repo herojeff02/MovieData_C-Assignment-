@@ -51,7 +51,7 @@ void initMovie(){
         (movies + index)->genre = (int *) malloc(sizeof(int));
 
         if(!strcmp(split2, "\n")){
-            char arr[20] = "(no genres listed)";
+            char arr[] = "(no genres listed)";
             *((movies + index)->genre) = genreIndex_ByString(arr);
             (movies + index)->sizeof_genre = 1;
         }
@@ -167,22 +167,27 @@ void initUser(){
         strcpy((users+index) -> password, split2);
 
         //3
-        split3 = strtok(split3, "\n");
-        int cnt;
         (users + index)->favourite_index = (int *) malloc(sizeof(int));
-        if (strstr(split3, "|")) {
-            cnt = 0;
-            char *favourite_index_split = strtok(split3, "|");
-            while (favourite_index_split != NULL) {
-                (users + index)->favourite_index = realloc((users + index)->favourite_index, (cnt + 1) * sizeof(int));
-                *(((users + index)->favourite_index) + cnt) = atoi(favourite_index_split);
-                favourite_index_split = strtok(NULL, "|");
-                cnt++;
+        if(!strcmp(split3, "\n")){
+            (users + index)->sizeof_favourites = 0;
+        }
+        else{
+            split3 = strtok(split3, "\n");
+            int cnt;
+            if (strstr(split3, "|")) {
+                cnt = 0;
+                char *favourite_index_split = strtok(split3, "|");
+                while (favourite_index_split != NULL) {
+                    (users + index)->favourite_index = realloc((users + index)->favourite_index, (cnt + 1) * sizeof(int));
+                    *(((users + index)->favourite_index) + cnt) = atoi(favourite_index_split);
+                    favourite_index_split = strtok(NULL, "|");
+                    cnt++;
+                }
+                (users + index)->sizeof_favourites = cnt;
+            } else {
+                *(((users + index)->favourite_index)) = atoi(split3);
+                (users + index)->sizeof_favourites = 1;
             }
-            (users + index)->sizeof_favourites = cnt;
-        } else {
-            *(((users + index)->favourite_index)) = atoi(split3);
-            (users + index)->sizeof_favourites = 1;
         }
 
         (users+index) -> enabled = 1;

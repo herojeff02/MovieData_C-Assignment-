@@ -21,7 +21,6 @@ int movieIndexExists(int index){
     return 0;
 }
 
-////check code from here
 int userIDExists(int user_id) {
     for (int i = 0; i < user_count; i++) {
         if ((users + i)->user_id == user_id) {
