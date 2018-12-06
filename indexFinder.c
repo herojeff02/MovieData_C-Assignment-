@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <printf.h>
+#include <stdio.h>
 #include "indexFinder.h"
 #include "dataType.h"
 #include "customString.h"
