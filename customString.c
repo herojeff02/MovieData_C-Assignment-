@@ -16,7 +16,7 @@ int stringIncludesMarker(char *string){ //Wait, wrong method name here.
     else
         return 1;
 }
-int forcedIntegerInput(char *string, int figures){
+int forcedIntegerInput(char *string, int figures, short is_maximum_figures){
     int result=0;
     for (int i = 0; i < strlen(string); ++i) {
         if(*(string+i) == '\n'){
@@ -32,13 +32,14 @@ int forcedIntegerInput(char *string, int figures){
     if(result>=pow(10.0, figures)){
         return FAIL_TOO_MANY_FIGURES;
     }
-    else if(result<pow(10.0, figures-1)){
+    else if(result<pow(10.0, figures-1) && !is_maximum_figures){
         return FAIL_LACK_OF_FIGURES;
     }
     else{
         return result;
     }
 }
+
 
 char* tolowerString(char *content){
     char* return_array = malloc(sizeof(char));
