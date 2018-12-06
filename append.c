@@ -102,6 +102,10 @@ int addTagEntity(int user_id, int movie_id, char *tag){
     (tags+tag_count) -> enabled = 1;
 
     tag_count++;
+
+    saveTag();
+    initTag();
+
     return SUCCESS;
 }
 int addUserEntity(int user_id, char *userName, char *password){
@@ -124,6 +128,10 @@ int addUserEntity(int user_id, char *userName, char *password){
     (users+user_count) -> enabled = 1;
 
     user_count++;
+
+    saveUser();
+    initUser();
+
     return SUCCESS;
 }
 int addFavouriteEntity(int user_id, int movie_id){
@@ -139,6 +147,9 @@ int addFavouriteEntity(int user_id, int movie_id){
     int user_index = userIndex_ByUserID(user_id);
     (user_index, movie_id);
 
+    saveFavourite();
+    initFavourite();
+
     return SUCCESS;
 }
 int addFavouriteIndex_ToUser(int user_index, int favourite_index){
@@ -146,5 +157,9 @@ int addFavouriteIndex_ToUser(int user_index, int favourite_index){
     *(((users+user_index) -> favourite_index) + (users+user_index)->sizeof_favourites) = favourite_index;
 
     (users+user_index)->sizeof_favourites++;
+
+    saveFavourite();
+    initFavourite();
+
     return SUCCESS;
 }
