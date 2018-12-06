@@ -43,6 +43,14 @@ int favouriteUserIDExists(int user_id) {
     }
     return 0;
 }
+int favouriteMovieIDExists(int movie_id) {
+    for (int i = 0; i < favourite_count; i++) {
+        if ((favourites + i)->movie_id == movie_id) {
+            return 1;
+        }
+    }
+    return 0;
+}
 int favouriteIndexExists(int index) {
     if (index < favourite_count) {
         return 1;

@@ -12,6 +12,7 @@ int userIndexExists(int index);
 int userNameExists(char *name);
 int tagIndexExists(int index);
 int favouriteUserIDExists(int user_id);
+int favouriteMovieIDExists(int user_id);
 int favouriteIndexExists(int index);
 int movieTitleExists(char *title);
 
