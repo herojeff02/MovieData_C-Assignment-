@@ -23,6 +23,6 @@ int* tagIndex_ByTag(char *tag); ////returns END_OF_INT_ARRAY at end of array
 
 int* favouriteIndex_ByUserID(int user_id); ////returns END_OF_INT_ARRAY at end of array
 int* favouriteIndex_ByMovieID(int movie_id); ////returns END_OF_INT_ARRAY at end of array
-int favouriteIndex_ByDoubleID(int user_id, int movie_id);
+int* favouriteIndex_ByDoubleID(int user_id, int movie_id);
 
 #endif //MOVIEDATA_C_ASSIGNMENT_INDEXFINDER_H

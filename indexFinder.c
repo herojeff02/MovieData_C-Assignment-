@@ -187,17 +187,46 @@ int* tagIndex_ByTag(char *tag){
     *(return_array+count) = END_OF_INT_ARRAY;
     return return_array;
 }
+//// check code from here
 int* favouriteIndex_ByUserID(int user_id){
-    int user_index = userIndex_ByUserID(user_id);
-    int *return_array = (users+user_index) -> favourite_index;
-    int index_count = (users+user_index) -> sizeof_favourites;
-    return_array = realloc(return_array, sizeof(int)*(index_count+1));
-    *(return_array+index_count) = END_OF_INT_ARRAY;
+    int *return_array = malloc(sizeof(int));
+    int count = 0;
+    for (int i = 0; i < favourite_count; i++) {
+        if ((favourites + i)->user_id == user_id) {
+            count++;
+            return_array = realloc(return_array, sizeof(int)*count);
+            *(return_array + count - 1) = i;
+        }
+    }
+    return_array = realloc(return_array, sizeof(int)*(count + 1));
+    *(return_array + count) = END_OF_INT_ARRAY;
     return return_array;
 }
 int* favouriteIndex_ByMovieID(int movie_id){
-
+    int *return_array = malloc(sizeof(int));
+    int count = 0;
+    for (int i = 0; i < favourite_count; i++) {
+        if ((favourites + i)->movie_id == movie_id) {
+            count++;
+            return_array = realloc(return_array, sizeof(int)*count);
+            *(return_array + count - 1) = i;
+        }
+    }
+    return_array = realloc(return_array, sizeof(int)*(count + 1));
+    *(return_array + count) = END_OF_INT_ARRAY;
+    return return_array;
 }
-int favouriteIndex_ByDoubleID(int user_id, int movie_id){
-
+int* favouriteIndex_ByDoubleID(int user_id, int movie_id){
+    int *return_array = malloc(sizeof(int));
+    int count = 0;
+    for (int i = 0; i < favourite_count; i++) {
+        if ((favourites + i)->user_id == user_id && (favourites + i)->movie_id == movie_id) {
+            count++;
+            return_array = realloc(return_array, sizeof(int)*count);
+            *(return_array + count - 1) = i;
+        }
+    }
+    return_array = realloc(return_array, sizeof(int)*(count + 1));
+    *(return_array + count) = END_OF_INT_ARRAY;
+    return return_array;
 }
