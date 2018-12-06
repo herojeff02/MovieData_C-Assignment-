@@ -16,15 +16,14 @@ int stringIncludesMarker(char *string){ //Wait, wrong method name here.
     else
         return 1;
 }
-int forcedIntegerInput(int figures){
+int forcedIntegerInput(char *string, int figures){
     int result=0;
-    while (1){
-        char temp = getchar();
-        if(temp == '\n'){
+    for (int i = 0; i < strlen(string); ++i) {
+        if(*(string+i) == '\n'){
             break;
         }
-        else if(isdigit(temp)){
-            result = result*10 + (temp - '0');
+        else if(isdigit(*(string+i))){
+            result = result*10 + (*(string+i) - '0');
         }
         else{
             return FAIL_NOT_A_NUMBER;
