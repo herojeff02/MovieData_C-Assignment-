@@ -29,6 +29,15 @@ int userIDExists(int user_id) {
     }
     return 0;
 }
+int userIDExists_InTag(int user_id) {
+    for (int i = 0; i < tag_count; i++) {
+        if ((tags + i)->user_id == user_id) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int userIndexExists(int index) {
     if (index < user_count) {
         return 1;
@@ -57,6 +66,8 @@ int favouriteIndexExists(int index) {
     }
     return 0;
 }
+
+
 
 int movieTitleExists(char *title) {
     for (int i = 0; i < movie_count; i++) {

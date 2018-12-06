@@ -8,6 +8,7 @@
 int movieIDExists(int movie_id);
 int movieIndexExists(int index);
 int userIDExists(int user_id);
+int userIDExists_InTag(int user_id);
 int userIndexExists(int index);
 int userNameExists(char *name);
 int tagIndexExists(int index);
