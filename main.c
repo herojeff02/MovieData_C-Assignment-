@@ -29,6 +29,7 @@ void addFavourite();
 void removeFavourite();
 void searchByUserID(); //input: user_id - output: all tags made by the user, movie info of tags, favourites list, movie info of favourites
 void searchByMovieTitle(); //input: title - output: genre, tags, release_year, favourited by whom?, similar movies
+void recommendMovie();
 void retire();
 
 void printAllTag(int movie_id);
@@ -76,13 +77,7 @@ void retire() {
 	free(favourites);
 }
 /*
-1. 영화 정보, 태그 정보 등등 출력하는 부분 함수로 분할
-(인덱스 넣으면 그 인덱스에 해당하는 영화/태그/사용자/즐겨찾기에 해당하는 정보가 출력되는 함수.
 우리 여태까지 예제에서 하던 것과 같은 형식이야. 이해 안 되면 예제 참고하거나 나한테 물어보거나! 맘대로 하지 말고.)
-2. removeMovie 등등등등 함수에서 printf("Movie ID to remove: “); 존나 불친절. 제목 입력하면 검색해서 지우도록 수정.
-3. removeTag에서 tag ID를 받을 게 아니라 movie_id와 user_id를 받아야 태그 하나를 특정해서 지울 수 있겠지? 둘 다 입력 받고 int* tagIndex_ByDoubleID(int user_id, int movie_id); 써서 지워.
-removeFavourite도 마찬가지로 favouriteIndex_ByDoubleID 있어…
-4. addMovie 등 함수에서 숫자 입력 받으면서 알파벳인지, 지정한 자릿수 안 넘는지 검사하는 부분을 내가 짜놓은 forcedIntegerInput, stringIncludesMarker 등 함수로 대체
 5. 우리 주요 기능 중 하나였던 장르별 영화 추천 만들어줘. int* movieIndex_ByGenre(int *genre, short genre_count); 여기다가 장르 목록 넣으면 됨.
 6. 위에 써놓은 거 말고도 우리 계획 세우면서 만든 ppt에 있던 내용 전부 만들어줘. 검색/삭제/추가 등에 필요한 함수 없으면 직접 만들지 말고 나한테 말해.
 UI쪽은 알아서 하고. 2번에 써놓은 것처럼 사용하기 편하게!!
@@ -203,7 +198,7 @@ void removeMovie() {
 	while (1) {
 		printf("Movie title to remove: ");
 		rewind(stdin);
-		scanf(" %[^\n]", movieTitleRemove);
+		scanf("%[^\n]", movieTitleRemove);
 
 		int movieIndexRemove;
 		movieIndexRemove = *movieIndex_ByMatchingTitle(movieTitleRemove);
@@ -472,7 +467,7 @@ void removeFavourite() {
 
 	//final
 	int favouriteIndexRemove;
-	favouriteIndexRemove = favouriteIndex_ByDoubleID(userID, movieID);
+	favouriteIndexRemove = *favouriteIndex_ByDoubleID(userID, movieID);
 	if (deleteFavourite_ByIndex(favouriteIndexRemove) == SUCCESS) {
 		printf("REMOVE SUCCESSFULLY!!\n");
 		return;
@@ -574,82 +569,148 @@ void removeUser() {
 }
 void searchByUserID() {
 	User *userEntity;
+	Tag *tagEntity;
+	Favourite *favouriteEntity;
 	userEntity = (User *)malloc(sizeof(User));
+	tagEntity = (Tag *)malloc(sizeof(Tag));
+	favouriteEntity = (Favourite *)malloc(sizeof(Favourite));
+	int userID;
 	char userIDEntity[7];
 	while (1) {
-		int temp;
 		printf("User ID to search: ");
 		scanf(" %s", userIDEntity);
-		for (int i = 0; i < strlen(userIDEntity); i++) {
-			if (isdigit(*userIDEntity + i) == 0) {
-				printf("It is not number\n");
-				break;
-			}
+		int result = forcedIntegerInput(userIDEntity, 6, 1);
+		if (result == FAIL_NOT_A_NUMBER) {
+			printf("It's not a number\n");
 		}
-		int cnt = 0;
-		for (int i = 0; i < strlen(userIDEntity); i++) {
-			if (isdigit(*userIDEntity + i) != 0)
-				cnt++;
+		else if (result == FAIL_TOO_MANY_FIGURES) {
+			printf("It's too big\n");
 		}
-		if (cnt == strlen(userIDEntity) && cnt != 0) {
-			temp = atoi(userIDEntity);
-			userEntity->user_id = temp;
+		else if (result == FAIL_LACK_OF_FIGURES) {
+			printf("It's too small\n");
+		}
+		else {
+			userID = result;
 			break;
 		}
 	}
 
-	int resultData = userIDExists(userEntity->user_id);
-
-	if (resultData == 1) {
-		printf("user ID: %d\n", userEntity->user_id);
-		printf("user name: %s\n", userEntity->user_name);
-		printf("password: %s\n", userEntity->password);
-		return;
-	}
-	else if (resultData == 0) {
-		printf("There is no such user ID\n");
+	int index_user = userIndex_ByUserID(userID);
+	if (index_user == FAIL_NO_SUCH_USER_ID) {
+		printf("No such user ID\n");
 		return;
 	}
 	else {
-		printf("Have some problem\n");
-		return;
-	}
+		int resultData = userIDExists(userEntity->user_id);
 
+		if (resultData == 1) {
+			printf("user name: %s\n", userEntity->user_name);
+		}
+		else if (resultData == 0) {
+			//Maybe it doesn't come to here
+			printf("There is no such user ID\n");
+			return;
+		}
+		else {
+			//Maybe it doesn't come to here
+			printf("Have some problem\n");
+			return;
+		}
+	}
+	/*
+	if (userIDExists_InTag(userID) == 1) {
+		int *index_tag;
+		index_tag = (int*)malloc(sizeof(int));
+		index_tag = tagIndex_ByUserID(userID);
+		printf("Movie ID: %d, Tag: %s\n",);
+	}
+	else {
+		printf("There's no tag");
+	}*/
+	return;
 }
 void searchByMovieTitle() {
-	Movie *movieEntity;
-	movieEntity = (Movie *)malloc(sizeof(Movie));
-	movieEntity->title = (char *)malloc(sizeof(movieEntity->title) * 300);
+	char *searchMovieTitle;
+	searchMovieTitle = (char *)malloc(sizeof(char) * 200);
 
-	printf("Title to search: ");
-	//    char titleEntity;
-	//    for(int i=0; titleEntity[i]=getchar() = '\n'; i++) {
-	//        movieEntity -> title = (char *) realloc(movieEntity -> title, sizeof((movieEntity -> title)+1));
-	//        printf("%s",titleEntity);
-	//    }
-	scanf(" %s", movieEntity->title);
-
-	int resultData = movieTitleExists(movieEntity->title);
-
-	if (resultData == 1) {
-		printf("movie ID: %d\n", movieEntity->movie_id);
-		printf("movie title: %s\n", movieEntity->title);
-		printf("release year: %d\n", movieEntity->release_year);
-		printf("genre: ");
-		for (int i = 0; i < movieEntity->sizeof_genre; i++) {
-			int* genreIndex = genreIndex_ByMovieID(movieEntity->movie_id);
-
+	while (1) {
+		printf("Title to search: ");
+		rewind(stdin);
+		scanf("%[^\n]", searchMovieTitle);
+		//if movie doesn't exist, it becomes to error...
+		if (movieTitleExists(searchMovieTitle) == 1) {
+			break;
 		}
-		return;
+		else {
+			printf("Movie doesn't exist\n");
+		}
 	}
-	else if (resultData == 0) {
-		printf("There is no such user ID\n");
-		return;
+
+	int index = *movieIndex_ByMatchingTitle(searchMovieTitle);
+
+	printf("Movie ID: %d\n", ((movies + index)->movie_id));
+	printf("Release year: %d\n", ((movies + index)->release_year));
+	printf("Genre: ");
+	int *genreIndex;
+	genreIndex = (int*)malloc(sizeof(int));
+	genreIndex = genreIndex_ByMovieID(((movies + index)->movie_id));
+	if (((movies + index)->sizeof_genre) == 0) {
+		printf("No genre.");
 	}
 	else {
-		printf("Have some problem\n");
-		return;
+		for (int i = 0; i < ((movies + index)->sizeof_genre); i++) {
+			char *genre;
+			genre = (char*)malloc(sizeof(char) * 20);
+			genre = string_ByGenreIndex(genreIndex[i]);
+			if (i < ((movies + index)->sizeof_genre) - 1) {
+				printf("%s|", genre);
+			}
+			else {
+				printf("%s\n", genre);
+			}
+		}
 	}
+	return;
+}
+void recommendMovie() {
+	char genreSize[3];
+	short genre_size;
+	int *genreIndex;
+	int *movieIndex;
+	genreIndex = (int*)malloc(sizeof(int));
+	movieIndex = (int*)malloc(sizeof(int));
+	while (1) {
+		printf("How many genres will you recommend: ");
+		scanf("%s", genreSize);
+		int result = forcedIntegerInput(genreSize, 2, 1);
+		if (result == FAIL_NOT_A_NUMBER) {
+			printf("It's not a number\n");
+		}
+		else if (result == FAIL_TOO_MANY_FIGURES) {
+			printf("It's too big\n");
+		}
+		else if (result == FAIL_LACK_OF_FIGURES) {
+			printf("It's too small\n");
+		}
+		else {
+			genre_size = result;
+			break;
+		}
+	}
+	//here is an error
+	for (int i = 0; i < genre_size; i++) {
+		char genre[20];
+		printf("Genre %d: ", i+1);
+		rewind(stdin);
+		scanf("%s", genre);
+		genreIndex = realloc(genreIndex, genre_size * sizeof(int));
+		*(genreIndex+i) = genreIndex_ByString(genre);
+	}
+	movieIndex=movieIndex_ByGenre(genreIndex, genre_size);
+	char *movietitle;
+	movietitle = (char *)malloc(sizeof(char) * 200);
+	movietitle = movies->title;
+	printf("%s", movietitle);
 }
 
 void close() {
@@ -666,7 +727,7 @@ int selectMenu() {
 		"5: Add favourite \n6: Remove favourite \n"
 		"7: Add user \n8: Remove user \n"
 		"9: Search by user ID \n10: Search by movie title \n"
-		"0: Close\n");
+		"11: Recommend movie \n0: Close\n");
 	printf("Please select a number: ");
 	scanf("%d", &num);
 	return num;
@@ -689,6 +750,7 @@ void menu() {
 		case 8: removeUser(); break;
 		case 9: searchByUserID(); break;
 		case 10: searchByMovieTitle(); break;
+		case 11: recommendMovie(); break;
 		case 0: close(); break;
 		default: printf("No number.\n"); break;
 		}
