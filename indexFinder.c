@@ -230,3 +230,12 @@ int* favouriteIndex_ByDoubleID(int user_id, int movie_id){
     *(return_array + count) = END_OF_INT_ARRAY;
     return return_array;
 }
+
+
+Tag tagFinder_ByIndex(int tag_index){
+    return tags[tag_index];
+}
+
+Favourite favouriteFinder_ByIndex(int fav_index){
+    return favourites[fav_index];
+}
