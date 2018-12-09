@@ -145,7 +145,7 @@ int addFavouriteEntity(int user_id, int movie_id){
     favourite_count++;
 
     int user_index = userIndex_ByUserID(user_id);
-    (user_index, movie_id);
+    addFavouriteIndex_ToUser(user_index, movie_id);
 
     saveFavourite();
     initFavourite();
@@ -158,8 +158,8 @@ int addFavouriteIndex_ToUser(int user_index, int favourite_index){
 
     (users+user_index)->sizeof_favourites++;
 
-    saveFavourite();
-    initFavourite();
+    saveUser();
+    initUser();
 
     return SUCCESS;
 }

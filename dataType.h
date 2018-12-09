@@ -32,6 +32,9 @@
 #define FAIL_NOT_A_NUMBER -8000
 #define FAIL_LACK_OF_FIGURES -10000
 
+#define FAIL_NO_SUCH_USER_NAME -11000
+#define FAIL_NO_SUCH_USER_PASSWORD -12000
+
 
 typedef struct{
     //please do not add more than 2 billion movies. You're not going to, are you?

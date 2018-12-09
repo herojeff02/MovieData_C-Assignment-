@@ -33,19 +33,15 @@ int* movieIndex_ByTitle(char *title){
     *(return_array+count) = END_OF_INT_ARRAY;
     return return_array;
 }
-int* movieIndex_ByMatchingTitle(char *title){
+int movieIndex_ByMatchingTitle(char *title){
     int *return_array = malloc(sizeof(int));
     int count=0;
     for(int i=0;i<movie_count;i++){
         if(!strcmp(tolowerString((movies + i)->title), tolowerString(title))){
-            count++;
-            return_array = realloc(return_array, sizeof(int)*count);
-            *(return_array+count-1) = i;
+            return i;
         }
     }
-    return_array = realloc(return_array, sizeof(int)*(count+1));
-    *(return_array+count) = END_OF_INT_ARRAY;
-    return return_array;
+    return FAIL_NO_SUCH_MOVIE_ID;
 }
 
 int genreIndex_ByString(char *genre){
@@ -95,7 +91,6 @@ int* movieIndex_ByGenre(int *genre, short genre_count){
             int *ar = malloc(sizeof(int)*genre_count);
             memcpy(ar, tempSortGenre(i), genre_count* sizeof(int));
             qsort(genre, (size_t)genre_count, sizeof(int), compare);
-            printf("%d %d %d %d\n", *ar, *genre, *(ar+1), *(genre+1));
             for(int j=0;j<genre_count;j++) {
                 if(*(ar+j) != *(genre+j)){
                     flag=0;
@@ -158,6 +153,28 @@ int* tagIndex_ByMovieID(int movie_id){
     return_array = realloc(return_array, sizeof(int)*(count+1));
     *(return_array+count) = END_OF_INT_ARRAY;
     return return_array;
+}
+int* tagIndex_ByContent(char *content){
+    int *return_array = malloc(sizeof(int));
+    int count=0;
+    for(int i=0;i<tag_count;i++){
+        if(strstr(((tags + i)->tag), content)!=NULL){
+            count++;
+            return_array = realloc(return_array, sizeof(int)*count);
+            *(return_array+count-1) = i;
+        }
+    }
+    return_array = realloc(return_array, sizeof(int)*(count+1));
+    *(return_array+count) = END_OF_INT_ARRAY;
+    return return_array;
+}
+int tagExists(char *content){
+    for(int i=0;i<tag_count;i++){
+        if(strstr(((tags + i)->tag), content)!=NULL){
+            return 1;
+        }
+    }
+    return 0;
 }
 int* tagIndex_ByDoubleID(int user_id, int movie_id){
     int *return_array = malloc(sizeof(int));
@@ -231,6 +248,14 @@ int* favouriteIndex_ByDoubleID(int user_id, int movie_id){
     return return_array;
 }
 
+int userIndex_ByName(char *name) {
+    for (int i = 0; i < user_count; i++) {
+        if (strcmp((users + i)->user_name, name) == 0) {
+            return i;
+        }
+    }
+    return FAIL_NO_SUCH_USER_NAME;
+}
 
 Tag tagFinder_ByIndex(int tag_index){
     return tags[tag_index];

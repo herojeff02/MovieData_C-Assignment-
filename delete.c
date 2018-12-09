@@ -45,5 +45,12 @@ int deleteUser_ByIndex(int index) {
     (users + index)->enabled = 0;
     saveUser();
     initUser();
+
+    for(int i=0;i<favourite_count;i++){
+        if((favourites+i)->user_id == (users+index)->user_id){
+            deleteFavourite_ByIndex(i);
+        }
+    }
+
     return SUCCESS;
 }

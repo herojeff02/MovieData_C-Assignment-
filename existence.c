@@ -71,7 +71,16 @@ int favouriteIndexExists(int index) {
 
 int movieTitleExists(char *title) {
     for (int i = 0; i < movie_count; i++) {
-        if (strcmp((movies + i)->title, title)) {
+        if (strstr((movies + i)->title, title)!=NULL) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int userNameExists(char *name){
+    for (int i = 0; i < user_count; i++) {
+        if (strcmp((users + i)->user_name , name) == 0) {
             return 1;
         }
     }

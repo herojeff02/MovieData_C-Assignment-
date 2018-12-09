@@ -8,7 +8,7 @@
 #include "dataType.h"
 
 int* movieIndex_ByTitle(char *title); ////returns END_OF_INT_ARRAY at end of array
-int* movieIndex_ByMatchingTitle(char *title); ////returns END_OF_INT_ARRAY at end of array
+int movieIndex_ByMatchingTitle(char *title); ////returns END_OF_INT_ARRAY at end of array
 int* movieIndex_ByGenre(int *genre, short genre_count); ////returns END_OF_INT_ARRAY at end of array
 int movieIndex_ByID(int movie_id);
 
@@ -22,6 +22,8 @@ int* tagIndex_ByUserID(int user_id); ////returns END_OF_INT_ARRAY at end of arra
 int* tagIndex_ByMovieID(int movie_id); ////returns END_OF_INT_ARRAY at end of array
 int* tagIndex_ByDoubleID(int user_id, int movie_id); ////returns END_OF_INT_ARRAY at end of array
 int* tagIndex_ByTag(char *tag); ////returns END_OF_INT_ARRAY at end of array
+int* tagIndex_ByContent(char *content);
+int tagExists(char *content);
 
 int* favouriteIndex_ByUserID(int user_id); ////returns END_OF_INT_ARRAY at end of array
 int* favouriteIndex_ByMovieID(int movie_id); ////returns END_OF_INT_ARRAY at end of array
@@ -29,5 +31,7 @@ int* favouriteIndex_ByDoubleID(int user_id, int movie_id);
 
 Tag tagFinder_ByIndex(int tag_index);
 Favourite favouriteFinder_ByIndex(int fav_index);
+
+int userIndex_ByName(char *name);
 
 #endif //MOVIEDATA_C_ASSIGNMENT_INDEXFINDER_H
