@@ -67,8 +67,13 @@ void initMovie() {
                 }
                 (movies + index)->sizeof_genre = cnt;
             } else {
-                *(((movies + index)->genre)) = genreIndex_ByString(split2);
-                (movies + index)->sizeof_genre = 1;
+                if(genreIndex_ByString(split2) == genreIndex_ByString("(no genres listed)")){
+                    (movies + index)->sizeof_genre = 0;
+                }
+                else {
+                    *(((movies + index)->genre)) = genreIndex_ByString(split2);
+                    (movies + index)->sizeof_genre = 1;
+                }
             }
         }
         (movies + index)->enabled = 1;

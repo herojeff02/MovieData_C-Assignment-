@@ -543,28 +543,47 @@ void searchByUserName() {
 void searchByMovieTitle() {
     char *searchMovieTitle;
     int *indexes;
+    int result=1;
     searchMovieTitle = (char *) malloc(sizeof(char) * 200);
 
     while (1) {
         printf("Title to search: ");
         rewind(stdin);
         scanf("%[^\n]", searchMovieTitle);
-        //if movie doesn't exist, it becomes to error...
         if (movieTitleExists(searchMovieTitle)) {
-            int cnt = 0;
-            indexes = movieIndex_ByTitle(searchMovieTitle);
-            while (1) {
-                if (*(indexes + cnt) == END_OF_INT_ARRAY) {
-                    break;
-                }
-                cnt++;
+            indexes = tagIndex_ByContent(searchTag);
+            break;
+        }
+        else {
+            printf("No such movie to be found. Try something else: \n");
+        }
+    }
+
+    while(1) {
+        int cnt = 0;
+        int page = -1;
+        char num[5];
+        short break_flag = 0;
+        indexes = movieIndex_ByTitle(searchMovieTitle);
+        while (1) {
+            if (*(indexes + cnt) == END_OF_INT_ARRAY) {
+                break;
+            }
+            cnt++;
+        }
+
+        if(result==1) {
+            page++;
+            int start = page * 10;
+            int end = (page + 1) * 10;
+            if (end > cnt) {
+                break_flag = 1;
+                end = cnt;
             }
 
-            for (int i = 0; i < cnt; i++) {
+            for (int i = start; i < end; i++) {
                 //movie ID, release year, genre
-                printf("Title: %s\n", ((movies + *(indexes + i))->title));
-                printf("Movie ID: %d\n", ((movies + *(indexes + i))->movie_id));
-                printf("Release year: %d\n", ((movies + *(indexes + i))->release_year));
+                printf("--------\n%s (%d) has id: %d\n", ((movies + *(indexes + i))->title),((movies + *(indexes + i))->release_year),((movies + *(indexes + i))->movie_id));
                 printf("Genre: ");
                 int *genreIndex;
                 genreIndex = genreIndex_ByMovieID(((movies + *(indexes + i))->movie_id));
@@ -587,10 +606,10 @@ void searchByMovieTitle() {
                 for (int j = 0; j < tag_count; j++) {
                     if ((movies + *(indexes + i))->movie_id == (tags + j)->movie_id) {
                         if (userIDExists(userIndex_ByUserID((tags + j)->user_id))) {
-                            printf("User %s left a tag: \"%s\"\n",
+                            printf("    User %s left a tag: \"%s\"\n",
                                    (users + userIndex_ByUserID((tags + j)->user_id))->user_name, (tags + j)->tag);
                         } else {
-                            printf("Unknown user left a tag: \"%s\"\n", (tags + j)->tag);
+                            printf("    Unknown user left a tag: \"%s\"\n", (tags + j)->tag);
                         }
                         k++;
                     }
@@ -604,21 +623,30 @@ void searchByMovieTitle() {
                 for (int j = 0; j < favourite_count; j++) {
                     if ((movies + *(indexes + i))->movie_id == (favourites + j)->movie_id) {
                         l++;
-                        printf("User %s who likes movie <%s>\n",
+                        printf("    User %s who likes movie <%s>\n",
                                (users + userIndex_ByUserID((favourites + j)->user_id))->user_name,
                                (movies + *(indexes + i))->title);
                     }
                 }
                 if (l == 0) {
-                    printf("No one added this movie to favourites.\n");
+                    printf("Nobody added this movie to favourites.\n");
                 }
 
             }
-            return;
-        } else {
-            printf("Movie doesn't exist\n");
-            return;
         }
+        else if(result==2){
+            break;
+        }
+
+        if (break_flag) {
+            printf("Reached end of result.\n");
+            break;
+        }
+
+        printf("1: Next page \n2: Return to main \n");
+        printf("Please select a number: ");
+        scanf(" %s", num);
+        result = forcedIntegerInput(num, 2, 1);
     }
 }
 
@@ -666,17 +694,17 @@ void searchTag() {
                 int movie_index = movieIndex_ByID((tags + *(indexes + i))->movie_id);
                 if (user_index == FAIL_NO_SUCH_USER_ID) {
                     if (movie_index == FAIL_NO_SUCH_MOVIE_ID) {
-                        printf("unknown user tagged unregistered movie as \"%s\"\n", (tags + *(indexes + i))->tag);
+                        printf("%d. unknown user tagged unregistered movie as \"%s\"\n", i+1,(tags + *(indexes + i))->tag);
                     } else {
-                        printf("unknown user tagged %s as \"%s\"\n", (movies + movie_index)->title,
+                        printf("%d. unknown user tagged %s as \"%s\"\n", i+1,(movies + movie_index)->title,
                                (tags + *(indexes + i))->tag);
                     }
                 } else {
                     if (user_index == FAIL_NO_SUCH_MOVIE_ID) {
-                        printf("%s tagged unregistered movie as \"%s\"\n", (users + user_index)->user_name,
+                        printf("%d. %s tagged unregistered movie as \"%s\"\n", i+1,(users + user_index)->user_name,
                                (tags + *(indexes + i))->tag);
                     } else {
-                        printf("%s tagged %s as \"%s\"\n", (users + user_index)->user_name,
+                        printf("%d. %s tagged %s as \"%s\"\n", i+1,(users + user_index)->user_name,
                                (movies + movie_index)->title,
                                (tags + *(indexes + i))->tag);
                     }
@@ -726,14 +754,43 @@ void recommendMovie() {
         count++;
     }
 
-    //output movie
     if (count != 0) {
         printf("Here are the recommendations tailored for you: \n");
-        for (int i = 0; i < count; i++) {
-            if (strcmp(movietitle, (movies + *(movieIndex + i))->title) != 0)
-                printf("%s\n", (movies + *(movieIndex + i))->title);
+        int page = -1;
+        int result = 1;
+        char num[4];
+        short break_flag = 0;
+
+        while (1) {
+            if (result == 1) {
+                page++;
+                int start = page * 10;
+                int end = (page + 1) * 10;
+                if (end > count) {
+                    break_flag = 1;
+                    end = count;
+                }
+
+                //output movie
+                for (int i = 0; i < count; i++) {
+                    if (strcmp(movietitle, (movies + *(movieIndex + i))->title) != 0)
+                        printf("%d. %s (%d)\n", i+1,(movies + *(movieIndex + i))->title, (movies + *(movieIndex + i))->release_year);
+                }
+            } else if (result == 2) {
+                break;
+            }
+
+            if (break_flag) {
+                printf("Reached end of result.\n");
+                break;
+            }
+            printf("1: Next page \n2: Return to main \n");
+            printf("Please select a number: ");
+            scanf(" %s", num);
+            result = forcedIntegerInput(num, 2, 1);
         }
-    } else {
+    }
+    else {
         printf("Failed to fetch similar movies.");
     }
 
