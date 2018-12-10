@@ -6,16 +6,15 @@
 #include "save.h"
 #include "dataType.h"
 
-void saveUser(){
+void saveUser() {
     FILE *fp1;
-    if(TEST_FILE_FLAG){
+    if (TEST_FILE_FLAG) {
         fp1 = fopen(testUserFile, "w");
-    }
-    else{
+    } else {
         fp1 = fopen(userFile, "w");
     }
 
-    if(user_count != 0) {
+    if (user_count != 0) {
         for (int i = 0; i < user_count; i++) {
             if ((users + i)->enabled) {
                 fprintf(fp1, "%d::%s::%s::", (users + i)->user_id, (users + i)->user_name, (users + i)->password);
@@ -32,25 +31,24 @@ void saveUser(){
 
     fclose(fp1);
 }
-void saveMovie(){
+
+void saveMovie() {
     FILE *fp1;
-    if(TEST_FILE_FLAG){
+    if (TEST_FILE_FLAG) {
         fp1 = fopen(testMovieFile, "w");
-    }
-    else{
+    } else {
         fp1 = fopen(movieFile, "w");
     }
 
-    if(movie_count != 0) {
+    if (movie_count != 0) {
         for (int i = 0; i < movie_count; i++) {
             if ((movies + i)->enabled) {
                 int k = 0;
                 fprintf(fp1, "%d::%s (%d)::", (movies + i)->movie_id, (movies + i)->title, (movies + i)->release_year);
-                if((movies + i)->sizeof_genre == 0){
-                    k=1;
-                }
-                else{
-                    k=(movies + i)->sizeof_genre;
+                if ((movies + i)->sizeof_genre == 0) {
+                    k = 1;
+                } else {
+                    k = (movies + i)->sizeof_genre;
                 }
                 for (int j = 0; j < k; j++) {
                     fprintf(fp1, "%s", genre_list[*((movies + i)->genre + j)]);
@@ -65,18 +63,18 @@ void saveMovie(){
 
     fclose(fp1);
 }
-void saveTag(){
+
+void saveTag() {
     FILE *fp2;
-    if(TEST_FILE_FLAG){
+    if (TEST_FILE_FLAG) {
         fp2 = fopen(testTagFile, "w");
-    }
-    else{
+    } else {
         fp2 = fopen(tagFile, "w");
     }
 
-    if(tag_count != 0) {
+    if (tag_count != 0) {
         for (int i = 0; i < tag_count; i++) {
-            if((tags+i)->enabled) {
+            if ((tags + i)->enabled) {
                 Tag temp = *(tags + i);
                 fprintf(fp2, "%d::%d::%s::%lld\n", temp.user_id, temp.movie_id, temp.tag, temp.timestamp);
             }
@@ -85,18 +83,18 @@ void saveTag(){
 
     fclose(fp2);
 }
-void saveFavourite(){
+
+void saveFavourite() {
     FILE *fp2;
-    if(TEST_FILE_FLAG){
+    if (TEST_FILE_FLAG) {
         fp2 = fopen(testFavouriteFile, "w");
-    }
-    else{
+    } else {
         fp2 = fopen(favouriteFile, "w");
     }
 
-    if(tag_count != 0) {
+    if (tag_count != 0) {
         for (int i = 0; i < favourite_count; i++) {
-            if((favourites+i)->enabled) {
+            if ((favourites + i)->enabled) {
                 Favourite temp = *(favourites + i);
                 fprintf(fp2, "%d::%d\n", temp.user_id, temp.movie_id);
             }
@@ -105,7 +103,8 @@ void saveFavourite(){
 
     fclose(fp2);
 }
-void save(){
+
+void save() {
     saveMovie();
     saveTag();
     saveUser();

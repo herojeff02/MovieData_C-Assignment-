@@ -14,7 +14,7 @@
 #define userFile "users.dat"
 #define favouriteFile "favourites.dat"
 
-#define TEST_FILE_FLAG 1
+#define TEST_FILE_FLAG 0
 #define LINE_LENGTH 1000
 
 #define END_OF_INT_ARRAY -500

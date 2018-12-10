@@ -10,87 +10,84 @@
 #include "customString.h"
 #include "dataType.h"
 
-int stringIncludesMarker(char *string){ //Wait, wrong method name here.
-    if(strstr(string, "::")==NULL)
+int stringIncludesMarker(char *string) { //Wait, wrong method name here.
+    if (strstr(string, "::") == NULL)
         return 0;
     else
         return 1;
 }
-int forcedIntegerInput(char *string, int figures, short is_maximum_figures){
-    int result=0;
+
+int forcedIntegerInput(char *string, int figures, short is_maximum_figures) {
+    int result = 0;
     for (int i = 0; i < strlen(string); ++i) {
-        if(*(string+i) == '\n'){
+        if (*(string + i) == '\n') {
             break;
-        }
-        else if(isdigit(*(string+i))){
-            result = result*10 + (*(string+i) - '0');
-        }
-        else{
+        } else if (isdigit(*(string + i))) {
+            result = result * 10 + (*(string + i) - '0');
+        } else {
             return FAIL_NOT_A_NUMBER;
         }
     }
-    if(result>=pow(10.0, figures)){
+    if (result >= pow(10.0, figures)) {
         return FAIL_TOO_MANY_FIGURES;
-    }
-    else if(result<pow(10.0, figures-1) && !is_maximum_figures){
+    } else if (result < pow(10.0, figures - 1) && !is_maximum_figures) {
         return FAIL_LACK_OF_FIGURES;
-    }
-    else{
+    } else {
         return result;
     }
 }
 
 
-char* tolowerString(char *content){
-    char* return_array = malloc(sizeof(char));
-    for(int i=0;i<strlen(content);i++){
-        return_array = realloc(return_array, sizeof(char)*(i+1));
-        *(return_array+i) = tolower(*(content+i));
+char *tolowerString(char *content) {
+    char *return_array = malloc(sizeof(char));
+    for (int i = 0; i < strlen(content); i++) {
+        return_array = realloc(return_array, sizeof(char) * (i + 1));
+        *(return_array + i) = tolower(*(content + i));
     }
-    return_array = realloc(return_array, sizeof(char)*strlen(content)+1);
-    *(return_array+strlen(content)) = '\0';
+    return_array = realloc(return_array, sizeof(char) * strlen(content) + 1);
+    *(return_array + strlen(content)) = '\0';
     return return_array;
 }
-char* tolowerCapitalizer(char *content){
-    char* return_array = malloc(sizeof(char)+1);
-    *(return_array+0) = toupper(*content);
+
+char *tolowerCapitalizer(char *content) {
+    char *return_array = malloc(sizeof(char) + 1);
+    *(return_array + 0) = toupper(*content);
     int bigFlag = 0;
-    for(int i=1;i<strlen(content);i++){
-        return_array = realloc(return_array, sizeof(char)*(i+1));
-        if(!bigFlag) {
+    for (int i = 1; i < strlen(content); i++) {
+        return_array = realloc(return_array, sizeof(char) * (i + 1));
+        if (!bigFlag) {
             *(return_array + i) = tolower(*(content + i));
-        }
-        else{
+        } else {
             *(return_array + i) = toupper(*(content + i));
             bigFlag = 0;
         }
 
-        if(*(return_array + i) == '-'){
+        if (*(return_array + i) == '-') {
             bigFlag = 1;
         }
     }
-    return_array = realloc(return_array, sizeof(char)*strlen(content)+1);
-    *(return_array+strlen(content)) = '\0';
+    return_array = realloc(return_array, sizeof(char) * strlen(content) + 1);
+    *(return_array + strlen(content)) = '\0';
     return return_array;
 }
+
 char *split_front(char *str, const char *delim) {
     char *p = strstr(str, delim);
 
     if (p == NULL) {
         return NULL;
-    }
-    else {
+    } else {
         *p = '\0';
         return str;
     }
 }
-char *split_back(char *str, const char *delim){
+
+char *split_back(char *str, const char *delim) {
     char *p = strstr(str, delim);
 
     if (p == NULL) {
         return NULL;
-    }
-    else {
+    } else {
         return p + strlen(delim);
     }
 }

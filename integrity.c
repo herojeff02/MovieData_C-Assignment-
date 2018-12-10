@@ -7,19 +7,18 @@
 #include "integrity.h"
 #include "dataType.h"
 
-int integrityMovie(){
+int integrityMovie() {
     FILE *fp;
-    if(TEST_FILE_FLAG){
+    if (TEST_FILE_FLAG) {
         fp = fopen(testMovieFile, "r");
-    }
-    else{
+    } else {
         fp = fopen(movieFile, "r");
     }
     char line[LINE_LENGTH];
     char gen_line[LINE_LENGTH];
-    int i=0;
+    int i = 0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
-        while(!((movies + i)->enabled)){
+        while (!((movies + i)->enabled)) {
             i++;
         }
 
@@ -31,7 +30,7 @@ int integrityMovie(){
             }
         }
         strcat(gen_line, "\n");
-        if(strcmp(line, gen_line)) {
+        if (strcmp(line, gen_line)) {
             printf("%s\n", line);
             printf("%s\n", gen_line);
             printf("i : %d\n", i);
@@ -43,25 +42,25 @@ int integrityMovie(){
     fclose(fp);
     return 0;
 }
-int integrityTag(){
+
+int integrityTag() {
     FILE *fp;
-    if(TEST_FILE_FLAG){
+    if (TEST_FILE_FLAG) {
         fp = fopen(testTagFile, "r");
-    }
-    else{
+    } else {
         fp = fopen(tagFile, "r");
     }
     char line[LINE_LENGTH];
     char gen_line[LINE_LENGTH];
-    int i=0;
+    int i = 0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
-        while(!((tags + i)->enabled)){
+        while (!((tags + i)->enabled)) {
             i++;
         }
 
         Tag temp = *(tags + i);
         sprintf(gen_line, "%d::%d::%s::%lld\n", temp.user_id, temp.movie_id, temp.tag, temp.timestamp);
-        if(strcmp(line, gen_line)) {
+        if (strcmp(line, gen_line)) {
             printf("%s\n", line);
             printf("%s\n", gen_line);
             printf("i : %d\n", i);
@@ -73,19 +72,19 @@ int integrityTag(){
     fclose(fp);
     return 0;
 }
-int integrityUser(){
+
+int integrityUser() {
     FILE *fp;
-    if(TEST_FILE_FLAG){
+    if (TEST_FILE_FLAG) {
         fp = fopen(testUserFile, "r");
-    }
-    else{
+    } else {
         fp = fopen(userFile, "r");
     }
     char line[LINE_LENGTH];
     char gen_line[LINE_LENGTH];
-    int i=0;
+    int i = 0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
-        while(!((users + i)->enabled)){
+        while (!((users + i)->enabled)) {
             i++;
         }
 
@@ -100,7 +99,7 @@ int integrityUser(){
             }
         }
         strcat(gen_line, "\n");
-        if(strcmp(line, gen_line)) {
+        if (strcmp(line, gen_line)) {
             printf("%s\n", line);
             printf("%s\n", gen_line);
             printf("i : %d\n", i);
@@ -113,25 +112,25 @@ int integrityUser(){
 
     return 0;
 }
-int integrityFavourite(){
+
+int integrityFavourite() {
     FILE *fp;
-    if(TEST_FILE_FLAG){
+    if (TEST_FILE_FLAG) {
         fp = fopen(testFavouriteFile, "r");
-    }
-    else{
+    } else {
         fp = fopen(favouriteFile, "r");
     }
     char line[LINE_LENGTH];
     char gen_line[LINE_LENGTH];
-    int i=0;
+    int i = 0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
-        while(!((favourites + i)->enabled)){
+        while (!((favourites + i)->enabled)) {
             i++;
         }
 
         sprintf(gen_line, "%d::%d", (favourites + i)->user_id, (favourites + i)->movie_id);
         strcat(gen_line, "\n");
-        if(strcmp(line, gen_line)) {
+        if (strcmp(line, gen_line)) {
             printf("%s\n", line);
             printf("%s\n", gen_line);
             printf("i : %d\n", i);
@@ -144,11 +143,12 @@ int integrityFavourite(){
 
     return 0;
 }
+
 int integrity() { //returns 1 when there's a problem.
-    if(!integrityMovie()){
-        if(!integrityTag()){
-            if(!integrityUser()){
-                if(!integrityFavourite()){
+    if (!integrityMovie()) {
+        if (!integrityTag()) {
+            if (!integrityUser()) {
+                if (!integrityFavourite()) {
                     return 0;
                 }
                 printf("\n---integrity fault with favourite---\n");

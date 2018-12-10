@@ -15,4 +15,4 @@ int user_count;
 int favourite_count;
 
 char **genre_list;
-int genre_list_cursor=0;
+int genre_list_cursor = 0;
