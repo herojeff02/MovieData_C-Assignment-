@@ -699,19 +699,21 @@ void searchTag() {
                 if (user_index == FAIL_NO_SUCH_USER_ID) {
                     if (movie_index == FAIL_NO_SUCH_MOVIE_ID) {
                         printf("%d. unknown user tagged unregistered movie as \"%s\" on %d/%d/%d\n", i + 1,
-                               (tags + *(indexes + i))->tag,t->tm_year+1900,t->tm_mon+1,t->tm_mday);
+                               (tags + *(indexes + i))->tag, t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
                     } else {
-                        printf("%d. unknown user tagged %s as \"%s\" on %d/%d/%d\n", i + 1, (movies + movie_index)->title,
-                               (tags + *(indexes + i))->tag,t->tm_year+1900,t->tm_mon+1,t->tm_mday);
+                        printf("%d. unknown user tagged %s as \"%s\" on %d/%d/%d\n", i + 1,
+                               (movies + movie_index)->title,
+                               (tags + *(indexes + i))->tag, t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
                     }
                 } else {
                     if (user_index == FAIL_NO_SUCH_MOVIE_ID) {
-                        printf("%d. %s tagged unregistered movie as \"%s\" on %d/%d/%d\n", i + 1, (users + user_index)->user_name,
-                               (tags + *(indexes + i))->tag,t->tm_year+1900,t->tm_mon+1,t->tm_mday);
+                        printf("%d. %s tagged unregistered movie as \"%s\" on %d/%d/%d\n", i + 1,
+                               (users + user_index)->user_name,
+                               (tags + *(indexes + i))->tag, t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
                     } else {
                         printf("%d. %s tagged %s as \"%s\" on %d/%d/%d\n", i + 1, (users + user_index)->user_name,
                                (movies + movie_index)->title,
-                               (tags + *(indexes + i))->tag,t->tm_year+1900,t->tm_mon+1,t->tm_mday);
+                               (tags + *(indexes + i))->tag, t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
                     }
                 }
 
