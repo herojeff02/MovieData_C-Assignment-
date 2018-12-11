@@ -18,5 +18,6 @@ int favouriteMovieIDExists(int user_id);
 int favouriteIndexExists(int index);
 int movieTitleExists(char *title);
 int multipleMatchingMovieTitleExists(char *title);
+int matchingMovieTitleExists(char *title);
 
 #endif //MOVIEDATA_C_ASSIGNMENT_EXISTENCE_H

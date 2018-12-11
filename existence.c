@@ -99,6 +99,15 @@ int movieTitleExists(char *title) {
     return 0;
 }
 
+int matchingMovieTitleExists(char *title) {
+    for (int i = 0; i < movie_count; i++) {
+        if (!strcmp(tolowerString((movies + i)->title), tolowerString(title))) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int multipleMatchingMovieTitleExists(char *title) {
     int count=0;
     for (int i = 0; i < movie_count; i++) {

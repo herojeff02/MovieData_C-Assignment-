@@ -38,7 +38,7 @@ int deleteFavourite_ByIndex(int index) {
     }
     (favourites + index)->enabled = 0;
 
-    deleteFavourite_FromUser((favourites + index)->user_id, (favourites + index)->movie_id)
+    deleteFavourite_FromUser((favourites + index)->user_id, (favourites + index)->movie_id);
 
     saveFavourite();
     initFavourite();

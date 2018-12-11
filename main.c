@@ -382,7 +382,7 @@ void removeTag() {
     while (1) {
         rewind(stdin);
         scanf("%[^\n]", title);
-        if (movieTitleExists(title)) {
+        if (matchingMovieTitleExists(title)) {
             movieIndex = movieIndex_ByMatchingTitle_WithoutYear(title);
 			int cnt = 0;
 			while (1) {
@@ -423,7 +423,7 @@ void removeTag() {
 			}
         } 
 		else {
-            printf("Movie doesn't exist in our DB. Maybe something else?\n");
+            printf("Movie doesn't exist in our DB. Maybe something else?:\n");
         }
     }
 
@@ -437,7 +437,7 @@ void removeTag() {
         tag_temp_count++;
     }
 	if (tag_temp_count == 0) {
-		printf("You didn't leave any tags for this movie.\n");
+		printf("You didn't leave any tags for %s\n", (movies + *(movieIndex + num))->title);
 	}
 	else {
 		if (deleteTag_ByIndex(*tagIndexRemove) == SUCCESS) {
