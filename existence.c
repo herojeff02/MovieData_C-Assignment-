@@ -48,6 +48,13 @@ int userIndexExists(int index) {
     return 0;
 }
 
+int tagIndexExists(int index){
+    if (index < tag_count) {
+        return 1;
+    }
+    return 0;
+}
+
 int tagExists(char *content) {
     for (int i = 0; i < tag_count; i++) {
         if (strstr(((tags + i)->tag), content) != NULL) {
