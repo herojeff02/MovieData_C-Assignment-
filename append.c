@@ -79,13 +79,6 @@ int addGenre_ToMovie(int movie_index, char *genre) {
     initMovie();
 }
 
-int removeGenre_FromMovie(int movie_index, char *genre) {
-
-
-    saveMovie();
-    initMovie();
-}
-
 int addTagEntity(int user_id, int movie_id, char *tag) {
     tags = (Tag *) realloc(tags, (tag_count + 1) * sizeof(Tag));
     //0
