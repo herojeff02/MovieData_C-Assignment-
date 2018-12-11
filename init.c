@@ -144,13 +144,11 @@ void initUser() {
     if (TEST_FILE_FLAG) {
         fp = fopen(testUserFile, "r");
         if (fp == NULL) {
-            fclose(fp);
             fp = fopen(testUserFile, "w+");
         }
     } else {
         fp = fopen(userFile, "r");
         if (fp == NULL) {
-            fclose(fp);
             fp = fopen(testUserFile, "w+");
         }
     }
@@ -221,13 +219,11 @@ void initFavourite() {
     if (TEST_FILE_FLAG) {
         fp = fopen(testFavouriteFile, "r");
         if (fp == NULL) {
-            fclose(fp);
             fp = fopen(testFavouriteFile, "w+");
         }
     } else {
-        fp = fopen(favouriteFile, "r+");
+        fp = fopen(favouriteFile, "r");
         if (fp == NULL) {
-            fclose(fp);
             fp = fopen(favouriteFile, "w+");
         }
     }

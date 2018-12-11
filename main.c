@@ -80,7 +80,7 @@ void login() {
         scanf(" %s", mode);
         _mode = forcedIntegerInput(mode, 1, 0);
         short escape_flag = 0;
-        if (_mode == 1 | _mode == 2 | _mode == 3) {
+        if (_mode == 1 || _mode == 2 || _mode == 3) {
             break;
         }
         printf("noneixstent mode. try again: \n");
@@ -255,15 +255,51 @@ void removeMovie() {
         rewind(stdin);
         scanf("%[^\n]", movieTitleRemove);
 
-        int movieIndexRemove;
-        movieIndexRemove = movieIndex_ByMatchingTitle(movieTitleRemove);
-        if (deleteMovie_ByIndex(movieIndexRemove) == SUCCESS) {
-            printf("REMOVE SUCCESSFULLY!!\n");
-            return;
-        } else {
-            printf("Have some problem. Remove again\n");
-            return;
-        }
+        int *movieIndexRemove;
+        movieIndexRemove = movieIndex_ByMatchingTitle_WithoutYear(movieTitleRemove);
+		int cnt = 0;
+		while(1) {
+			if (*(movieIndexRemove + cnt) ==END_OF_INT_ARRAY) {
+				break;
+			}
+			cnt++;
+		}
+
+		if (cnt > 1) {
+			printf("More than 1 movies exist. Please select it.");
+			for (int i = 0;i < cnt;i++) {
+				printf("%d. release year: %d", cnt + 1, (movies + *(movieIndexRemove + i))->release_year);
+			}
+			int num;
+			printf("Which one would you like to remove? Select the index: \n");
+			scanf("%d", &num);
+			for (int i = 0;i < cnt;i++) {
+				if (num - 1 == i) {
+					if (deleteMovie_ByIndex(movieIndexRemove[i]) == SUCCESS) {
+						printf("REMOVE SUCCESSFULLY!!\n");
+						return;
+					}
+					else {
+						printf("Have some problem. Remove again\n");
+						return;
+					}
+				}
+			}
+		}
+		else if (cnt == 1) {
+			if (deleteMovie_ByIndex(movieIndexRemove[0]) == SUCCESS) {
+				printf("REMOVE SUCCESSFULLY!!\n");
+				return;
+			}
+			else {
+				printf("Have some problem. Remove again\n");
+				return;
+			}
+		}
+		else {
+			printf("Movie doesn't exist.");
+			return;
+		}
     }
 }
 
@@ -277,19 +313,43 @@ void addTag() {
 
     //movie_title
     char title[100];
-    int movieIndex = 0;
+    int *movieIndex;
+	int num;
     printf("Movie title: \n");
     while (1) {
         rewind(stdin);
         scanf("%[^\n]", title);
         if (movieTitleExists(title)) {
-            movieIndex = movieIndex_ByMatchingTitle(title);
+            movieIndex = movieIndex_ByMatchingTitle_WithoutYear(title);
+			int cnt = 0;
+			while (1) {
+				if (*(movieIndex + cnt) == END_OF_INT_ARRAY) {
+					break;
+				}
+				cnt++;
+			}
+
+			if (cnt > 1) {
+				printf("More than 1 movies exist. Please select it.");
+				for (int i = 0;i < cnt;i++) {
+					printf("%d. release year: %d", cnt + 1, (movies + *(movieIndex + i))->release_year);
+				}
+				printf("Which one would you like to remove? Select the index: \n");
+				scanf("%d", &num);
+				num = num - 1;
+				break;
+			}
+			else if (cnt == 1) {
+				num = 0;
+				break;
+			}
             break;
-        } else {
+        } 
+		else {
             printf("Movie doesn't exist in our DB. Maybe something else?\n");
         }
     }
-    tagEntity->movie_id = (movies + movieIndex)->movie_id;
+    tagEntity->movie_id = (movies + *(movieIndex+num))->movie_id;
 
     //tag
     printf("tag: ");
@@ -309,8 +369,10 @@ void addTag() {
 
 void removeTag() {
     int userID;
-    int movieIndex;
+    int *movieIndex;
     char title[100];
+	int num;
+	char num1[2];
 
     //user_id
     userID = (users + logged_in_user_index)->user_id;
@@ -321,15 +383,52 @@ void removeTag() {
         rewind(stdin);
         scanf("%[^\n]", title);
         if (movieTitleExists(title)) {
-            movieIndex = movieIndex_ByMatchingTitle(title);
-            break;
-        } else {
+            movieIndex = movieIndex_ByMatchingTitle_WithoutYear(title);
+			int cnt = 0;
+			while (1) {
+				if (*(movieIndex + cnt) == END_OF_INT_ARRAY) {
+					break;
+				}
+				cnt++;
+			}
+
+			if (cnt > 1) {
+				printf("More than 1 movies exist. Please select it.");
+				for (int i = 0;i < cnt;i++) {
+					printf("%d. release year: %d", cnt + 1, (movies + *(movieIndex + i))->release_year);
+				}
+				while (1) {
+					printf("Which one would you like to remove? Select the index: \n");
+					scanf(" %s", num1);
+					int result = forcedIntegerInput(num1, 1, 1);
+					if (result == FAIL_NOT_A_NUMBER) {
+						printf("It's not a number\n");
+					}
+					else if (result == FAIL_TOO_MANY_FIGURES) {
+						printf("It's too big\n");
+					}
+					else if (result == FAIL_LACK_OF_FIGURES) {
+						printf("It's too small\n");
+					}
+					else {
+						num = num1[0] - 1;
+						break;
+					}
+				}
+				break;
+			}
+			else if (cnt == 1) {
+				num = 0;
+				break;
+			}
+        } 
+		else {
             printf("Movie doesn't exist in our DB. Maybe something else?\n");
         }
     }
 
     //final
-    int *tagIndexRemove = tagIndex_ByDoubleID(userID, (movies + movieIndex)->movie_id);
+    int *tagIndexRemove = tagIndex_ByDoubleID(userID, (movies + *(movieIndex + num))->movie_id);
     int tag_temp_count = 0;
     while (1) {
         if (*(tagIndexRemove + tag_temp_count) == END_OF_INT_ARRAY) {
@@ -337,13 +436,19 @@ void removeTag() {
         }
         tag_temp_count++;
     }
-    if (deleteTag_ByIndex(*tagIndexRemove) == SUCCESS) {
-        printf("REMOVE SUCCESSFULLY!!\n");
-        return;
-    } else {
-        printf("Have some problem. Remove again.\n");
-        return;
-    }
+	if (tag_temp_count == 0) {
+		printf("You didn't leave any tags for this movie.\n");
+	}
+	else {
+		if (deleteTag_ByIndex(*tagIndexRemove) == SUCCESS) {
+			printf("REMOVE SUCCESSFULLY!!\n");
+			return;
+		}
+		else {
+			printf("Have some problem. Remove again.\n");
+			return;
+		}
+	}
 }
 
 void addFavourite() {
@@ -353,22 +458,46 @@ void addFavourite() {
     favouriteEntity.user_id = (users + logged_in_user_index)->user_id;
 
     //movie_id
-    int movieIndex;
+    int *movieIndex;
     char title[100];
+	int num;
     printf("Movie title: \n");
     while (1) {
         rewind(stdin);
         scanf("%[^\n]", title);
         if (movieTitleExists(title)) {
-            movieIndex = movieIndex_ByMatchingTitle(title);
+            movieIndex = movieIndex_ByMatchingTitle_WithoutYear(title);
+			int cnt = 0;
+			while (1) {
+				if (*(movieIndex + cnt) == END_OF_INT_ARRAY) {
+					break;
+				}
+				cnt++;
+			}
+
+			if (cnt > 1) {
+				printf("More than 1 movies exist. Please select it.");
+				for (int i = 0;i < cnt;i++) {
+					printf("%d. release year: %d", cnt + 1, (movies + *(movieIndex + i))->release_year);
+				}
+				printf("Which one would you like to remove? Select the index: \n");
+				scanf("%d", &num);
+				num = num - 1;
+				break;
+			}
+			else if (cnt == 1) {
+				num = 0;
+				break;
+			}
             break;
-        } else {
+        } 
+		else {
             printf("Movie doesn't exist in our DB. Maybe something else?\n");
         }
     }
 
     //final
-    int resultData = addFavouriteEntity(favouriteEntity.user_id, (movies + movieIndex)->movie_id);
+    int resultData = addFavouriteEntity(favouriteEntity.user_id, (movies + *(movieIndex+num))->movie_id);
 
     if (resultData == SUCCESS) {
         printf("ADD SUCCESSFULLY!!\n");
@@ -386,22 +515,46 @@ void removeFavourite() {
     userID = (users + logged_in_user_index)->user_id;
 
     //movie_id
-    int movieIndex;
+    int *movieIndex;
     char title[100];
+	int num;
     printf("Movie title: \n");
     while (1) {
         rewind(stdin);
         scanf("%[^\n]", title);
         if (movieTitleExists(title)) {
-            movieIndex = movieIndex_ByMatchingTitle(title);
-            break;
-        } else {
+            movieIndex = movieIndex_ByMatchingTitle_WithoutYear(title);
+			int cnt = 0;
+			while (1) {
+				if (*(movieIndex + cnt) == END_OF_INT_ARRAY) {
+					break;
+				}
+				cnt++;
+			}
+
+			if (cnt > 1) {
+				printf("More than 1 movies exist. Please select it.");
+				for (int i = 0;i < cnt;i++) {
+					printf("%d. release year: %d", cnt + 1, (movies + *(movieIndex + i))->release_year);
+				}
+				int num;
+				printf("Which one would you like to remove? Select the index: \n");
+				scanf("%d", &num);
+				num = num - 1;
+				break;
+			}
+			else if (cnt == 1) {
+				num = 0;
+				break;
+			}
+        } 
+		else {
             printf("Movie doesn't exist in our DB. Maybe something else?\n");
         }
     }
 
     //final
-    int *favouriteIndexRemove = favouriteIndex_ByDoubleID(userID, (movies + movieIndex)->movie_id);
+    int *favouriteIndexRemove = favouriteIndex_ByDoubleID(userID, (movies + *(movieIndex+num))->movie_id);
     int count = 0;
     while (1) {
         if (*(favouriteIndexRemove + count) == END_OF_INT_ARRAY) {
@@ -543,6 +696,7 @@ void searchByUserName() {
 void searchByMovieTitle() {
     char *searchMovieTitle;
     int *indexes;
+	int num;
     int result = 1;
     searchMovieTitle = (char *) malloc(sizeof(char) * 200);
 
@@ -551,9 +705,32 @@ void searchByMovieTitle() {
         rewind(stdin);
         scanf("%[^\n]", searchMovieTitle);
         if (movieTitleExists(searchMovieTitle)) {
-            indexes = tagIndex_ByContent(searchTag);
-            break;
-        } else {
+            indexes = movieIndex_ByTitle(searchMovieTitle);
+			int cnt = 0;
+			while (1) {
+				if (*(indexes + cnt) == END_OF_INT_ARRAY) {
+					break;
+				}
+				cnt++;
+			}
+
+			if (cnt > 1) {
+				printf("More than 1 movies exist. Please select it.");
+				for (int i = 0;i < cnt;i++) {
+					printf("%d. release year: %d", cnt + 1, (movies + *(indexes + i))->release_year);
+				}
+				int num;
+				printf("Which one would you like to remove? Select the index: \n");
+				scanf("%d", &num);
+				num = num - 1;
+				break;
+			}
+			else if (cnt == 1) {
+				num = 0;
+				break;
+			}
+        } 
+		else {
             printf("No such movie to be found. Try something else: \n");
         }
     }
@@ -738,6 +915,8 @@ void searchTag() {
 void recommendMovie() {
     int *movieIndex;
     char *movietitle = (char *) malloc(sizeof(char) * 200);
+	int num;
+	int *temp_index;
 
     printf("Name the movie that suits your taste, and I'll bring up similar movies for you: ");
     while (1) {
@@ -746,12 +925,32 @@ void recommendMovie() {
         if (!movieTitleExists(movietitle)) {
             printf("That movie doesn't seem to exist in our DB. Maybe something else?");
         } else {
+			temp_index = movieIndex_ByMatchingTitle_WithoutYear(movietitle);
+			int cnt = 0;
+			while (1) {
+				if (*(temp_index + cnt) == END_OF_INT_ARRAY) {
+					break;
+				}
+				cnt++;
+			}
+
+			if (cnt > 1) {
+				printf("More than 1 movies exist. Please select it.");
+				for (int i = 0;i < cnt;i++) {
+					printf("%d. release year: %d", cnt + 1, (movies + *(temp_index + i))->release_year);
+				}
+				printf("Which one would you like to remove? Select the index: \n");
+				scanf("%d", &num);
+				num = num - 1;
+			}
+			else if (cnt == 1) {
+				num = 0;
+			}
             break;
         }
     }
 
-    int temp_index = movieIndex_ByMatchingTitle(movietitle);
-    movieIndex = movieIndex_ByGenre((movies + temp_index)->genre, (movies + temp_index)->sizeof_genre);
+    movieIndex = movieIndex_ByGenre((movies + *(temp_index+num))->genre, (movies + *(temp_index+num))->sizeof_genre);
     int count = 0;
     while (1) {
         if (*(movieIndex + count) == END_OF_INT_ARRAY) {
@@ -892,8 +1091,6 @@ int main() {
     }
     retire();
     endTimer();
-
-    printf("%s", string_ByGenreIndex(3));
 
     return 0;
 }

@@ -46,7 +46,8 @@ void saveMovie() {
                 int k = 0;
                 fprintf(fp1, "%d::%s (%d)::", (movies + i)->movie_id, (movies + i)->title, (movies + i)->release_year);
                 if ((movies + i)->sizeof_genre == 0) {
-                    k = 1;
+					fprintf(fp1, "(no genres listed");
+					break;
                 } else {
                     k = (movies + i)->sizeof_genre;
                 }

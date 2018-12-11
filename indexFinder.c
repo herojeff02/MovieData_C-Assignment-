@@ -55,7 +55,7 @@ int* movieIndex_ByMatchingTitle_WithoutYear(char *title) {
             *(return_array+count-1) = i;
         }
     }
-    return_array = realloc(return_array, sizeof(int)*(count+1);
+	return_array = realloc(return_array, sizeof(int)*(count + 1));
     *(return_array+count) = END_OF_INT_ARRAY;
     return return_array;
 }
