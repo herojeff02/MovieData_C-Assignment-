@@ -713,54 +713,15 @@ void searchByMovieTitle() {
         if (movieTitleExists(searchMovieTitle)) {
             indexes = movieIndex_ByTitle(searchMovieTitle);
 			break;
-			/*int cnt = 0;
-			while (1) {
-				if (*(indexes + cnt) == END_OF_INT_ARRAY) {
-					break;
-				}
-				cnt++;
-			}
-
-			if (cnt > 1) {
-				printf("----%d", cnt);
-				printf("More than 1 movies exist. Please select it.\n");
-				for (int i = 0;i < cnt;i++) {
-					printf("%d. release year: %d\n", i + 1, (movies + *(indexes + i))->release_year);
-				}
-				while (1) {
-					printf("Which one would you want to choose? Select the index: \n");
-					scanf("%s", num1);
-					int result = forcedIntegerInput(num1, 4, 1);
-					if (result == FAIL_NOT_A_NUMBER) {
-						printf("It's not a number\n");
-					}
-					else if (result == FAIL_TOO_MANY_FIGURES) {
-						printf("It's too big\n");
-					}
-					else if (result == FAIL_LACK_OF_FIGURES) {
-						printf("It's too small\n");
-					}
-					else {
-						num = result;
-						break;
-					}
-				}
-				num = num - 1;
-				break;
-			}
-			else if (cnt == 1) {
-				num = 0;
-				break;
-			}*/
         }
 		else {
             printf("No such movie to be found. Try something else: \n");
         }
     }
 
+    int page = -1;
     while (1) {
         int cnt = 0;
-        int page = -1;
         char num[5];
         short break_flag = 0;
         indexes = movieIndex_ByTitle(searchMovieTitle);
@@ -782,7 +743,7 @@ void searchByMovieTitle() {
 
             for (int i = start; i < end; i++) {
                 //movie ID, release year, genre
-                printf("--------\n%s (%d) has id: %d\n", ((movies + *(indexes + i))->title),
+                printf("--------------------------------------\n%s (%d) has id: %d\n", ((movies + *(indexes + i))->title),
                        ((movies + *(indexes + i))->release_year), ((movies + *(indexes + i))->movie_id));
                 printf("Genre: ");
                 int *genreIndex;
@@ -938,8 +899,8 @@ void searchTag() {
 void recommendMovie() {
     int *movieIndex;
     char *movietitle = (char *) malloc(sizeof(char) * 200);
-	int num;
-	int *temp_index;
+    int num;
+    int *temp_index;
 
     printf("Name the movie that suits your taste, and I'll bring up similar movies for you: ");
     while (1) {
@@ -948,27 +909,27 @@ void recommendMovie() {
         if (!matchingMovieTitleExists(movietitle)) {
             printf("That movie doesn't seem to exist in our DB. Maybe something else?");
         } else {
-			temp_index = movieIndex_ByMatchingTitle_WithoutYear(movietitle);
-			int cnt = 0;
-			while (1) {
-				if (*(temp_index + cnt) == END_OF_INT_ARRAY) {
-					break;
-				}
-				cnt++;
-			}
+            temp_index = movieIndex_ByMatchingTitle_WithoutYear(movietitle);
+            int cnt = 0;
+            while (1) {
+                if (*(temp_index + cnt) == END_OF_INT_ARRAY) {
+                    break;
+                }
+                cnt++;
+            }
 
-			if (cnt > 1) {
-				printf("More than 1 movies exist. Please select it.");
-				for (int i = 0;i < cnt;i++) {
-					printf("%d. release year: %d", cnt + 1, (movies + *(temp_index + i))->release_year);
-				}
-				printf("Which one would you like to choose? Select the index: \n");
-				scanf("%d", &num);
-				num = num - 1;
-			}
-			else if (cnt == 1) {
-				num = 0;
-			}
+            if (cnt > 1) {
+                printf("More than 1 movies exist. Please select it.");
+                for (int i = 0;i < cnt;i++) {
+                    printf("%d. release year: %d", cnt + 1, (movies + *(temp_index + i))->release_year);
+                }
+                printf("Which one would you like to choose? Select the index: \n");
+                scanf("%d", &num);
+                num = num - 1;
+            }
+            else if (cnt == 1) {
+                num = 0;
+            }
             break;
         }
     }
@@ -1001,7 +962,7 @@ void recommendMovie() {
 
                 //output movie
                 for (int i = start; i < end; i++) {
-                    if (strcmp(movietitle, (movies + *(movieIndex + i))->title) != 0)
+                    if (strcmp(tolowerString(movietitle), tolowerString((movies + *(movieIndex + i))->title)))
                         printf("%d. %s (%d)\n", i + 1, (movies + *(movieIndex + i))->title,
                                (movies + *(movieIndex + i))->release_year);
                 }
@@ -1033,7 +994,7 @@ void close() {
 
 int selectMenu() {
     char num[3];
-    printf("1: Add movie \n2: Remove movie \n"
+    printf("\n1: Add movie \n2: Remove movie \n"
            "3: Add tag \n4: Remove tag \n"
            "5: Add favourite \n6: Remove favourite \n"
            "7: Log out \n8: Remove account \n"
