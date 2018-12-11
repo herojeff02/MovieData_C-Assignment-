@@ -68,10 +68,11 @@ int* favouriteIndex_ByDoubleID(int user_id, int movie_id);
 favourites 배열에서 movie_id, user_id와 연결된 인덱스 배열을 반환합니다.
 
 Tag tagFinder_ByIndex(int tag_index);
-ㅁ
+tag_index에 해당하는 Tag 개체를 반환합니다.
 
 Favourite favouriteFinder_ByIndex(int fav_index);
-ㅁ
+fav_index에 해당하는 Favourite 개체를 반환합니다.
 
 int userIndex_ByName(char *name);
-ㅁ
+name(user_name)을 가진 User의 인덱스를 반환합니다.
+
