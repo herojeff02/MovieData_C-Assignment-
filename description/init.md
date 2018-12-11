@@ -5,9 +5,13 @@ customString.c에서 작성한 split_back, split_front를 사용합니다.
 모든 구조체 배열은 포인터를 사용하기 때문에 한 줄/한 요소(장르, 즐겨찾기 목록 등)를 읽을 때마다 realloc하는 코드가 있습니다.
 
 void initMovie()
+
+영화의 장르를 읽을 때 genreIndex_ByString 함수를 통해 string을 int 인덱스로 치환해 메모리를 절약하고, 새로운 장르에 대비할 수 있게 합니다.
+
 void initTag()
 void initUser()
 void initFavourite()
 
 위 네 개 함수를 한번에 실행하는 함수가 아래의 init() 함수입니다.
 void init()
+
