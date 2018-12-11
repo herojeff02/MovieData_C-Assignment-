@@ -34,15 +34,30 @@ int *movieIndex_ByTitle(char *title) {
     return return_array;
 }
 
-int movieIndex_ByMatchingTitle(char *title) {
+int movieIndex_ByMatchingTitle(char *title, int year) {
     int *return_array = malloc(sizeof(int));
     int count = 0;
     for (int i = 0; i < movie_count; i++) {
-        if (!strcmp(tolowerString((movies + i)->title), tolowerString(title))) {
+        if (!strcmp(tolowerString((movies + i)->title), tolowerString(title)) && (movies + i)->release_year == year) {
             return i;
         }
     }
     return FAIL_NO_SUCH_MOVIE_ID;
+}
+
+int* movieIndex_ByMatchingTitle_WithoutYear(char *title) {
+    int *return_array = malloc(sizeof(int));
+    int count = 0;
+    for (int i = 0; i < movie_count; i++) {
+        if (!strcmp(tolowerString((movies + i)->title), tolowerString(title))) {
+            count++;
+            return_array = realloc(return_array, sizeof(int)*count);
+            *(return_array+count-1) = i;
+        }
+    }
+    return_array = realloc(return_array, sizeof(int)*(count+1);
+    *(return_array+count) = END_OF_INT_ARRAY;
+    return return_array;
 }
 
 int genreIndex_ByString(char *genre) {
@@ -176,15 +191,6 @@ int *tagIndex_ByContent(char *content) {
     return_array = realloc(return_array, sizeof(int) * (count + 1));
     *(return_array + count) = END_OF_INT_ARRAY;
     return return_array;
-}
-
-int tagExists(char *content) {
-    for (int i = 0; i < tag_count; i++) {
-        if (strstr(((tags + i)->tag), content) != NULL) {
-            return 1;
-        }
-    }
-    return 0;
 }
 
 int *tagIndex_ByDoubleID(int user_id, int movie_id) {

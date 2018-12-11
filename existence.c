@@ -48,6 +48,15 @@ int userIndexExists(int index) {
     return 0;
 }
 
+int tagExists(char *content) {
+    for (int i = 0; i < tag_count; i++) {
+        if (strstr(((tags + i)->tag), content) != NULL) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int favouriteUserIDExists(int user_id) {
     for (int i = 0; i < favourite_count; i++) {
         if ((favourites + i)->user_id == user_id) {
@@ -81,6 +90,16 @@ int movieTitleExists(char *title) {
         }
     }
     return 0;
+}
+
+int multipleMatchingMovieTitleExists(char *title) {
+    int count=0;
+    for (int i = 0; i < movie_count; i++) {
+        if (!strcmp(tolowerString((movies + i)->title), tolowerString(title))) {
+            count++;
+        }
+    }
+    return count;
 }
 
 int userNameExists(char *name) {
