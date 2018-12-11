@@ -266,9 +266,9 @@ void removeMovie() {
 		}
 
 		if (cnt > 1) {
-			printf("More than 1 movies exist. Please select it.");
+			printf("More than 1 movies exist. Please select it.\n");
 			for (int i = 0;i < cnt;i++) {
-				printf("%d. release year: %d", cnt + 1, (movies + *(movieIndexRemove + i))->release_year);
+				printf("%d. release year: %d\n", i + 1, (movies + *(movieIndexRemove + i))->release_year);
 			}
 			int num;
 			printf("Which one would you like to remove? Select the index: \n");
@@ -330,11 +330,11 @@ void addTag() {
 			}
 
 			if (cnt > 1) {
-				printf("More than 1 movies exist. Please select it.");
+				printf("More than 1 movies exist. Please select it.\n");
 				for (int i = 0;i < cnt;i++) {
-					printf("%d. release year: %d", cnt + 1, (movies + *(movieIndex + i))->release_year);
+					printf("%d. release year: %d\n", i + 1, (movies + *(movieIndex + i))->release_year);
 				}
-				printf("Which one would you like to remove? Select the index: \n");
+				printf("Which one would you like to select? Select the index: \n");
 				scanf("%d", &num);
 				num = num - 1;
 				break;
@@ -393,9 +393,9 @@ void removeTag() {
 			}
 
 			if (cnt > 1) {
-				printf("More than 1 movies exist. Please select it.");
+				printf("More than 1 movies exist. Please select it.\n");
 				for (int i = 0;i < cnt;i++) {
-					printf("%d. release year: %d", cnt + 1, (movies + *(movieIndex + i))->release_year);
+					printf("%d. release year: %d\n", i + 1, (movies + *(movieIndex + i))->release_year);
 				}
 				while (1) {
 					printf("Which one would you like to remove? Select the index: \n");
@@ -476,11 +476,11 @@ void addFavourite() {
 			}
 
 			if (cnt > 1) {
-				printf("More than 1 movies exist. Please select it.");
+				printf("More than 1 movies exist. Please select it.\n");
 				for (int i = 0;i < cnt;i++) {
-					printf("%d. release year: %d", cnt + 1, (movies + *(movieIndex + i))->release_year);
+					printf("%d. release year: %d\n", i + 1, (movies + *(movieIndex + i))->release_year);
 				}
-				printf("Which one would you like to remove? Select the index: \n");
+				printf("Which one would you like to select? Select the index: \n");
 				scanf("%d", &num);
 				num = num - 1;
 				break;
@@ -533,11 +533,10 @@ void removeFavourite() {
 			}
 
 			if (cnt > 1) {
-				printf("More than 1 movies exist. Please select it.");
+				printf("More than 1 movies exist. Please select it.\n");
 				for (int i = 0;i < cnt;i++) {
-					printf("%d. release year: %d", cnt + 1, (movies + *(movieIndex + i))->release_year);
+					printf("%d. release year: %d\n", i + 1, (movies + *(movieIndex + i))->release_year);
 				}
-				int num;
 				printf("Which one would you like to remove? Select the index: \n");
 				scanf("%d", &num);
 				num = num - 1;
@@ -547,31 +546,32 @@ void removeFavourite() {
 				num = 0;
 				break;
 			}
-        } 
+        }
 		else {
             printf("Movie doesn't exist in our DB. Maybe something else?\n");
         }
     }
 
     //final
-	if (favouriteMovieIDExists((movies + *(movieIndex + num))->movie_id)) {
+	if (!favouriteMovieIDExists((movies + *(movieIndex + num))->movie_id)) {
 		printf("You didn't add favourites this movie.\n");
 		return;
 	}
-    int *favouriteIndexRemove = favouriteIndex_ByDoubleID(userID, (movies + *(movieIndex+num))->movie_id);
-    int count = 0;
-    while (1) {
-        if (*(favouriteIndexRemove + count) == END_OF_INT_ARRAY) {
-            break;
+	else {
+        int *favouriteIndexRemove = favouriteIndex_ByDoubleID(userID, (movies + *(movieIndex + num))->movie_id);
+        int count = 0;
+        while (1) {
+            if (*(favouriteIndexRemove + count) == END_OF_INT_ARRAY) {
+                break;
+            }
+            count++;
         }
-        count++;
-    }
-    for (int i = 0; i < count; i++) {
-        if (deleteFavourite_ByIndex(*(favouriteIndexRemove + i)) == SUCCESS) {
-            printf("Removed all entities successfully!!\n");
-        } 
-		else {
-            printf("Have some problem. Remove again\n");
+        for (int i = 0; i < count; i++) {
+            if (deleteFavourite_ByIndex(*(favouriteIndexRemove + i)) == SUCCESS) {
+                printf("Removed all entities successfully!!\n");
+            } else {
+                printf("Have some problem. Remove again\n");
+            }
         }
     }
 }
@@ -689,7 +689,7 @@ void searchByUserName() {
     if (favouriteUserIDExists(userEntity.user_id) == 1) {
         for (int i = 0; i < favourite_count; i++) {
             if (userEntity.user_id == (favourites + i)->user_id) {
-                printf("Favourited movie title: %s\n", (movies + movieIndex_ByID((favourites + i)->movie_id))->title);
+                printf("Favourited movie title: %s (%d)\n", (movies + movieIndex_ByID((favourites + i)->movie_id))->title, (movies + movieIndex_ByID((favourites + i)->movie_id))->release_year);
             }
         }
     } else {
@@ -919,9 +919,9 @@ void recommendMovie() {
             }
 
             if (cnt > 1) {
-                printf("More than 1 movies exist. Please select it.");
+                printf("More than 1 movies exist. Please select it.\n");
                 for (int i = 0;i < cnt;i++) {
-                    printf("%d. release year: %d", cnt + 1, (movies + *(temp_index + i))->release_year);
+                    printf("%d. release year: %d\n", i + 1, (movies + *(temp_index + i))->release_year);
                 }
                 printf("Which one would you like to choose? Select the index: \n");
                 scanf("%d", &num);
@@ -1062,6 +1062,7 @@ int main() {
     startTimer();
 
     init();
+
     login();
     menu();
 

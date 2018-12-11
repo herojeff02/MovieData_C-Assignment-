@@ -23,12 +23,18 @@ int integrityMovie() {
         }
 
         sprintf(gen_line, "%d::%s (%d)::", ((movies + i)->movie_id), (movies + i)->title, (movies + i)->release_year);
-        for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
-            strcat(gen_line, genre_list[*((movies + i)->genre + j)]);
-            if (j != ((movies + i)->sizeof_genre) - 1 && (movies + i)->sizeof_genre != 0) {
-                strcat(gen_line, "|");
+        if((movies + i)->sizeof_genre == 0){
+            sprintf(gen_line, "%d::%s (%d)::(no genres listed)", ((movies + i)->movie_id), (movies + i)->title, (movies + i)->release_year);
+        }
+        else{
+            for (int j = 0; j < (movies + i)->sizeof_genre; j++) {
+                strcat(gen_line, genre_list[*((movies + i)->genre + j)]);
+                if (j != ((movies + i)->sizeof_genre) - 1 && (movies + i)->sizeof_genre != 0) {
+                    strcat(gen_line, "|");
+                }
             }
         }
+
         strcat(gen_line, "\n");
         if (strcmp(line, gen_line)) {
             printf("%s\n", line);
@@ -124,19 +130,22 @@ int integrityFavourite() {
     char gen_line[LINE_LENGTH];
     int i = 0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
-        while (!((favourites + i)->enabled)) {
+        if(strcmp(line, "\n")) {
+
+            while (!((favourites + i)->enabled)) {
+                i++;
+            }
+
+            sprintf(gen_line, "%d::%d", (favourites + i)->user_id, (favourites + i)->movie_id);
+            strcat(gen_line, "\n");
+            if (strcmp(line, gen_line)) {
+                printf("%s\n", line);
+                printf("%s\n", gen_line);
+                printf("i : %d\n", i);
+                return 1;
+            }
             i++;
         }
-
-        sprintf(gen_line, "%d::%d", (favourites + i)->user_id, (favourites + i)->movie_id);
-        strcat(gen_line, "\n");
-        if (strcmp(line, gen_line)) {
-            printf("%s\n", line);
-            printf("%s\n", gen_line);
-            printf("i : %d\n", i);
-            return 1;
-        }
-        i++;
     }
 
     fclose(fp);

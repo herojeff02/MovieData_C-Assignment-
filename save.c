@@ -28,6 +28,9 @@ void saveUser() {
             }
         }
     }
+    else{
+        fprintf(fp1, "\n");
+    }
 
     fclose(fp1);
 }
@@ -46,7 +49,7 @@ void saveMovie() {
                 int k = 0;
                 fprintf(fp1, "%d::%s (%d)::", (movies + i)->movie_id, (movies + i)->title, (movies + i)->release_year);
                 if ((movies + i)->sizeof_genre == 0) {
-					fprintf(fp1, "(no genres listed");
+					fprintf(fp1, "(no genres listed)\n");
 					break;
                 } else {
                     k = (movies + i)->sizeof_genre;
@@ -60,6 +63,9 @@ void saveMovie() {
                 fprintf(fp1, "\n");
             }
         }
+    }
+    else{
+        fprintf(fp1, "\n");
     }
 
     fclose(fp1);
@@ -81,6 +87,9 @@ void saveTag() {
             }
         }
     }
+    else{
+        fprintf(fp2, "\n");
+    }
 
     fclose(fp2);
 }
@@ -93,13 +102,16 @@ void saveFavourite() {
         fp2 = fopen(favouriteFile, "w");
     }
 
-    if (tag_count != 0) {
+    if (favourite_count != 0) {
         for (int i = 0; i < favourite_count; i++) {
             if ((favourites + i)->enabled) {
                 Favourite temp = *(favourites + i);
                 fprintf(fp2, "%d::%d\n", temp.user_id, temp.movie_id);
             }
         }
+    }
+    else{
+        fprintf(fp2, "\n");
     }
 
     fclose(fp2);

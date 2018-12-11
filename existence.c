@@ -3,6 +3,7 @@
 //
 
 #include <string.h>
+#include <printf.h>
 #include "existence.h"
 #include "dataType.h"
 #include "customString.h"

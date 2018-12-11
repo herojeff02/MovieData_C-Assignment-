@@ -227,22 +227,26 @@ void initFavourite() {
             fp = fopen(favouriteFile, "w+");
         }
     }
-    index = 0;
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         favourites = (Favourite *) realloc(favourites, (index + 1) * sizeof(Favourite));
 
-        char *split1 = split_back(line, "::");
-        char *split0 = split_front(line, "::");
+        if(!strcmp(line, "\n")){
 
-        //0
-        (favourites + index)->user_id = atoi(split0);
+        }
+        else {
+            char *split1 = split_back(line, "::");
+            char *split0 = split_front(line, "::");
 
-        //1
-        (favourites + index)->movie_id = atoi(split1);
+            //0
+            (favourites + index)->user_id = atoi(split0);
 
-        (favourites + index)->enabled = 1;
+            //1
+            (favourites + index)->movie_id = atoi(split1);
 
-        index++;
+            (favourites + index)->enabled = 1;
+
+            index++;
+        }
     }
     fclose(fp);
 

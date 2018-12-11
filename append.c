@@ -142,7 +142,7 @@ int addFavouriteEntity(int user_id, int movie_id) {
     favourite_count++;
 
     int user_index = userIndex_ByUserID(user_id);
-    addFavouriteIndex_ToUser(user_index, movie_id);
+    addFavouriteIndex_ToUser(user_index, favourite_count-1);
 
     saveFavourite();
     initFavourite();

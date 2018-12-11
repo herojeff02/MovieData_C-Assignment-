@@ -3,6 +3,7 @@
 //
 
 #include <stdlib.h>
+#include <printf.h>
 #include "delete.h"
 #include "existence.h"
 #include "indexFinder.h"
@@ -38,10 +39,11 @@ int deleteFavourite_ByIndex(int index) {
     }
     (favourites + index)->enabled = 0;
 
-    deleteFavourite_FromUser((favourites + index)->user_id, (favourites + index)->movie_id);
-
     saveFavourite();
     initFavourite();
+
+    deleteFavourite_FromUser((favourites + index)->user_id, (favourites + index)->movie_id);
+
     return SUCCESS;
 }
 
@@ -51,7 +53,7 @@ void deleteFavourite_FromUser(int user_id, int fav_index){
 
     int shift_flag=0;
     for(int i=0;i<(users+user_index) -> sizeof_favourites;i++){
-        if(!shift_flag && *((users+user_index) -> favourite_index+i)==fav_index){
+        if(*((users+user_index) -> favourite_index+i)==fav_index){
             shift_flag=1;
         }
         if(shift_flag){
@@ -61,7 +63,9 @@ void deleteFavourite_FromUser(int user_id, int fav_index){
         }
     }
     (users+user_index) -> sizeof_favourites--;
-    (users+user_index) -> favourite_index = realloc((users+user_index) -> favourite_index, sizeof(int)*((users+user_index) -> sizeof_favourites));
+
+    saveUser();
+    initUser();
 }
 
 int deleteUser_ByIndex(int index) {
