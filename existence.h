@@ -14,7 +14,7 @@ int userNameExists(char *name);
 int tagIndexExists(int index);
 int tagExists(char *content);
 int favouriteUserIDExists(int user_id);
-int favouriteMovieIDExists(int user_id);
+int favouriteMovieIDExists(int movie_id);
 int favouriteIndexExists(int index);
 int movieTitleExists(char *title);
 int multipleMatchingMovieTitleExists(char *title);
