@@ -441,7 +441,7 @@ void removeTag() {
 		printf("You didn't leave any tags for %s\n", (movies + *(movieIndex + num))->title);
 	}
 	else {
-		if (deleteTag_ByIndex(*tagIndexRemove) == SUCCESS) {
+		if (deleteTag_ByIndex(tagIndexRemove) == SUCCESS) {
 			printf("REMOVE SUCCESSFULLY!!\n");
 			return;
 		}

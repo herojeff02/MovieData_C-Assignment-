@@ -6,7 +6,7 @@
 #define MOVIEDATA_C_ASSIGNMENT_DELETE_H
 
 int deleteMovie_ByIndex(int index);
-int deleteTag_ByIndex(int index);
+int deleteTag_ByIndex(int *indexes);
 int deleteUser_ByIndex(int index);
 int deleteFavourite_ByIndex(int index);
 void deleteFavourite_FromUser(int user_index, int movie_index);

@@ -20,12 +20,20 @@ int deleteMovie_ByIndex(int index) {
     return SUCCESS;
 }
 
-int deleteTag_ByIndex(int index) {
+int deleteTag_ByIndex(int *indexes) {
     ////add tagIndexExists here
-    if (!tagIndexExists(index)) {
-        return FAIL_NO_SUCH_INDEX;
+    for(int i=0;;i++){
+        if(*(indexes+i) == END_OF_INT_ARRAY){
+            break;
+        }
+        else{
+            int index = *(indexes+i);
+            if (!tagIndexExists(index)) {
+                continue;
+            }
+            (tags + index)->enabled = 0;
+        }
     }
-    (tags + index)->enabled = 0;
     saveTag();
     initTag();
     return SUCCESS;
