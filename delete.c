@@ -3,7 +3,6 @@
 //
 
 #include <stdlib.h>
-#include <printf.h>
 #include "delete.h"
 #include "existence.h"
 #include "indexFinder.h"

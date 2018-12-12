@@ -39,9 +39,10 @@ void addFavourite();
 
 void removeFavourite();
 
-void
-searchByUserName(); //input: user_id - output: all tags made by the user, movie info of tags, favourites list, movie info of favourites
+void searchByUserName(); //input: user_id - output: all tags made by the user, movie info of tags, favourites list, movie info of favourites
+
 void searchByMovieTitle(); //input: title - output: genre, tags, release_year, favourited by whom?, similar movies
+
 void searchTag();
 
 void recommendMovie();
@@ -83,7 +84,7 @@ void login() {
         if (_mode == 1 || _mode == 2 || _mode == 3) {
             break;
         }
-        printf("noneixstent mode. try again: \n");
+        printf("nonexistent mode. try again: \n");
     }
 
     if (_mode == 2) {
