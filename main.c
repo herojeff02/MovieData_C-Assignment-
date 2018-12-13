@@ -291,7 +291,7 @@ void removeMovie() {
 			}
 		}
 		else if (cnt == 1) {
-			if (deleteMovie_ByIndex(movieIndexRemove[0]) == SUCCESS) {
+			if (deleteMovie_ByIndex(*(movieIndexRemove)) == SUCCESS) {
 				printf("REMOVE SUCCESSFULLY!!\n");
 				return;
 			}
