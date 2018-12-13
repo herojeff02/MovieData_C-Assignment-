@@ -317,13 +317,14 @@ void addTag() {
 
     //movie_title
     char title[200];
+    char num1[20];
     int *movieIndex;
 	int num;
     printf("Movie title: \n");
     while (1) {
         rewind(stdin);
         scanf("%[^\n]", title);
-        if (movieTitleExists(title)) {
+        if (matchingMovieTitleExists(title)) {
             movieIndex = movieIndex_ByMatchingTitle_WithoutYear(title);
 			int cnt = 0;
 			while (1) {
@@ -334,23 +335,36 @@ void addTag() {
 			}
 
 			if (cnt > 1) {
-				printf("More than 1 movies exist. Please select it.\n");
-				for (int i = 0;i < cnt;i++) {
-					printf("%d. release year: %d\n", i + 1, (movies + *(movieIndex + i))->release_year);
-				}
-				printf("Which one would you like to select? Select the index: \n");
-				scanf("%d", &num);
-				num = num - 1;
-				break;
+                printf("More than 1 movies exist. Please select one.\n");
+                for (int i = 0;i < cnt;i++) {
+                    printf("%d. release year: %d\n", i + 1, (movies + *(movieIndex + i))->release_year);
+                }
+                while (1) {
+                    printf("Which one would you like to add the tag to? Select the index: \n");
+                    scanf(" %s", num1);
+                    int result = forcedIntegerInput(num1, 1, 1);
+                    if (result == FAIL_NOT_A_NUMBER) {
+                        printf("It's not a number\n");
+                    }
+                    else if (result == FAIL_TOO_MANY_FIGURES) {
+                        printf("It's too big\n");
+                    }
+                    else if (result == FAIL_LACK_OF_FIGURES) {
+                        printf("It's too small\n");
+                    }
+                    else {
+                        num = result - 1;
+                        break;
+                    }
+                }
 			}
 			else if (cnt == 1) {
 				num = 0;
 				break;
 			}
-            break;
-        } 
+        }
 		else {
-            printf("Movie doesn't exist in our DB. Maybe something else?\n");
+            printf("Movie doesn't exist in our DB. Maybe something else?:\n");
         }
     }
     tagEntity->movie_id = (movies + *(movieIndex+num))->movie_id;
@@ -467,6 +481,7 @@ void addFavourite() {
     int *movieIndex;
     char title[200];
 	int num;
+	char num1[20];
     printf("Movie title: \n");
     while (1) {
         rewind(stdin);
@@ -482,21 +497,35 @@ void addFavourite() {
 			}
 
 			if (cnt > 1) {
-				printf("More than 1 movies exist. Please select it.\n");
-				for (int i = 0;i < cnt;i++) {
-					printf("%d. release year: %d\n", i + 1, (movies + *(movieIndex + i))->release_year);
-				}
-				printf("Which one would you like to select? Select the index: \n");
-				scanf("%d", &num);
-				num = num - 1;
-				break;
+                printf("More than 1 movies exist. Please select it.\n");
+                for (int i = 0;i < cnt;i++) {
+                    printf("%d. release year: %d\n", i + 1, (movies + *(movieIndex + i))->release_year);
+                }
+                while (1) {
+                    printf("Which one would you like to select? Select the index: \n");
+                    scanf(" %s", num1);
+                    int result = forcedIntegerInput(num1, 1, 1);
+                    if (result == FAIL_NOT_A_NUMBER) {
+                        printf("It's not a number\n");
+                    }
+                    else if (result == FAIL_TOO_MANY_FIGURES) {
+                        printf("It's too big\n");
+                    }
+                    else if (result == FAIL_LACK_OF_FIGURES) {
+                        printf("It's too small\n");
+                    }
+                    else {
+                        num = result - 1;
+                        break;
+                    }
+                }
+                break;
 			}
 			else if (cnt == 1) {
 				num = 0;
 				break;
 			}
-            break;
-        } 
+        }
 		else {
             printf("Movie doesn't exist in our DB. Maybe something else?\n");
         }
@@ -524,6 +553,7 @@ void removeFavourite() {
     int *movieIndex;
     char title[200];
 	int num;
+	char num1[5];
     printf("Movie title: \n");
     while (1) {
         rewind(stdin);
@@ -539,14 +569,29 @@ void removeFavourite() {
 			}
 
 			if (cnt > 1) {
-				printf("More than 1 movies exist. Please select it.\n");
-				for (int i = 0;i < cnt;i++) {
-					printf("%d. release year: %d\n", i + 1, (movies + *(movieIndex + i))->release_year);
-				}
-				printf("Which one would you like to remove? Select the index: \n");
-				scanf("%d", &num);
-				num = num - 1;
-				break;
+                printf("More than 1 movies exist. Please select one.\n");
+                for (int i = 0;i < cnt;i++) {
+                    printf("%d. release year: %d\n", i + 1, (movies + *(movieIndex + i))->release_year);
+                }
+                while (1) {
+                    printf("Which one would you like to remove? Select the index: \n");
+                    scanf("%s", num1);
+                    int result = forcedIntegerInput(num1, 1, 1);
+                    if (result == FAIL_NOT_A_NUMBER) {
+                        printf("It's not a number\n");
+                    }
+                    else if (result == FAIL_TOO_MANY_FIGURES) {
+                        printf("It's too big\n");
+                    }
+                    else if (result == FAIL_LACK_OF_FIGURES) {
+                        printf("It's too small\n");
+                    }
+                    else {
+                        num = result - 1;
+                        break;
+                    }
+                }
+                break;
 			}
 			else if (cnt == 1) {
 				num = 0;
@@ -560,7 +605,7 @@ void removeFavourite() {
 
     //final
 	if (!favouriteMovieIDExists((movies + *(movieIndex + num))->movie_id)) {
-		printf("You didn't add favourites this movie.\n");
+		printf("You didn't favourite this movie.\n");
 		return;
 	}
 	else {
@@ -575,10 +620,8 @@ void removeFavourite() {
         for (int i = 0; i < count; i++) {
             if (deleteFavourite_ByIndex(*(favouriteIndexRemove + i)) == SUCCESS) {
                 printf("Removed all entities successfully!!\n");
-				return;
             } else {
                 printf("Have some problem. Remove again\n");
-				return;
             }
         }
     }
@@ -1083,6 +1126,7 @@ int main() {
     startTimer();
 
     init();
+
 
     login();
     menu();

@@ -3,6 +3,7 @@
 //
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "delete.h"
 #include "existence.h"
 #include "indexFinder.h"
@@ -46,10 +47,12 @@ int deleteFavourite_ByIndex(int index) {
     }
     (favourites + index)->enabled = 0;
 
+//    printf(",,,%d", (favourites + index)->user_id);
+
+    deleteFavourite_FromUser((favourites + index)->user_id, index);
+
     saveFavourite();
     initFavourite();
-
-    deleteFavourite_FromUser((favourites + index)->user_id, (favourites + index)->movie_id);
 
     return SUCCESS;
 }
@@ -58,18 +61,20 @@ void deleteFavourite_FromUser(int user_id, int fav_index){
     int user_index;
     user_index = userIndex_ByUserID(user_id);
 
-    int shift_flag=0;
-    for(int i=0;i<(users+user_index) -> sizeof_favourites;i++){
+    int i;
+    for(i=0;i<(users+user_index) -> sizeof_favourites;i++){
         if(*((users+user_index) -> favourite_index+i)==fav_index){
-            shift_flag=1;
+            break;
         }
-        if(shift_flag){
-            if(i<(users+user_index) -> sizeof_favourites-1) {
-                *((users+user_index) -> favourite_index + i) = *((users+user_index) -> favourite_index + i + 1);
-            }
+
+    }
+    for(int j=i;j<(users+user_index) -> sizeof_favourites;j++){
+        if(j<((users+user_index) -> sizeof_favourites)-1) {
+            *((users+user_index) -> favourite_index + j) = *((users+user_index) -> favourite_index + j + 1);
         }
     }
     (users+user_index) -> sizeof_favourites--;
+    printf("///%d", (users+user_index) -> sizeof_favourites);
 
     saveUser();
     initUser();
