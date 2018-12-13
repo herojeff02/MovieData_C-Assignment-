@@ -39,9 +39,9 @@ void addFavourite();
 
 void removeFavourite();
 
-void searchByUserName(); //input: user_id - output: all tags made by the user, movie info of tags, favourites list, movie info of favourites
+void searchByUserName();
 
-void searchByMovieTitle(); //input: title - output: genre, tags, release_year, favourited by whom?, similar movies
+void searchByMovieTitle();
 
 void searchTag();
 
@@ -219,7 +219,6 @@ void addMovie() {
 
     //genre
     movieEntity->genre = (int *) malloc(sizeof(int) * movieEntity->sizeof_genre);
-    int index = movieIndex_ByID(movieEntity->movie_id);
     for (int i = 0; i < movieEntity->sizeof_genre; i++) {
         char inputGenre[30];
         printf("Genre %d: ", i + 1);
@@ -231,6 +230,9 @@ void addMovie() {
     //final
     int resultData = addMovieEntity(movieEntity->movie_id, movieEntity->title, movieEntity->release_year,
                                     movieEntity->genre, movieEntity->sizeof_genre);
+	free(movieEntity);
+	free(movieEntity->title);
+	free(movieEntity->genre);
     if (resultData == SUCCESS) {
         printf("ADD SUCCESSFULLY!!\n");
         return;
@@ -258,6 +260,7 @@ void removeMovie() {
 
         int *movieIndexRemove;
         movieIndexRemove = movieIndex_ByMatchingTitle_WithoutYear(movieTitleRemove);
+		free(movieTitleRemove);
 		int cnt = 0;
 		while(1) {
 			if (*(movieIndexRemove + cnt) ==END_OF_INT_ARRAY) {
@@ -313,7 +316,7 @@ void addTag() {
     tagEntity->user_id = (users + logged_in_user_index)->user_id;
 
     //movie_title
-    char title[100];
+    char title[200];
     int *movieIndex;
 	int num;
     printf("Movie title: \n");
@@ -359,6 +362,8 @@ void addTag() {
 
     //final
     int resultData = addTagEntity(tagEntity->user_id, tagEntity->movie_id, tagEntity->tag);
+	free(tagEntity);
+	free(tagEntity->tag);
     if (resultData == SUCCESS) {
         printf("ADD SUCCESSFULLY!!\n");
         return;
@@ -371,7 +376,7 @@ void addTag() {
 void removeTag() {
     int userID;
     int *movieIndex;
-    char title[100];
+    char title[200];
 	int num;
 	char num1[2];
 
@@ -460,7 +465,7 @@ void addFavourite() {
 
     //movie_title
     int *movieIndex;
-    char title[100];
+    char title[200];
 	int num;
     printf("Movie title: \n");
     while (1) {
@@ -517,7 +522,7 @@ void removeFavourite() {
 
     //movie_title
     int *movieIndex;
-    char title[100];
+    char title[200];
 	int num;
     printf("Movie title: \n");
     while (1) {
@@ -570,8 +575,10 @@ void removeFavourite() {
         for (int i = 0; i < count; i++) {
             if (deleteFavourite_ByIndex(*(favouriteIndexRemove + i)) == SUCCESS) {
                 printf("Removed all entities successfully!!\n");
+				return;
             } else {
                 printf("Have some problem. Remove again\n");
+				return;
             }
         }
     }
@@ -628,7 +635,8 @@ void addUser() {
 
     //final
     int resultData = addUserEntity(userEntity.user_id, userEntity.user_name, userEntity.password);
-
+	free(userEntity.user_name);
+	free(userEntity.password);
     if (resultData == SUCCESS) {
         printf("ADD SUCCESSFULLY!!\n");
         logged_in_user_index = userIndex_ByUserID(userEntity.user_id);
@@ -655,6 +663,7 @@ void removeUser() {
 }
 
 void searchByUserName() {
+	//user_name
     char name[100];
     User userEntity;
     while (1) {
@@ -667,14 +676,12 @@ void searchByUserName() {
         }
     }
 
-    //user_name
-
     int index_user = userIndex_ByName(name);
     userEntity.user_name = malloc(sizeof(char) * strlen(name));
     strcpy(userEntity.user_name, name);
     userEntity.user_id = (users + index_user)->user_id;
 
-    //movie_id and tag
+    //title and tag
     if (userIDExists_InTag(userEntity.user_id) == 1) {
         for (int i = 0; i < tag_count; i++) {
             if (userEntity.user_id == (tags + i)->user_id) {
@@ -696,18 +703,18 @@ void searchByUserName() {
     } else {
         printf("There's no %s's favourite\n", userEntity.user_name);
     }
+	free(userEntity.user_name);
     return;
 }
 
 void searchByMovieTitle() {
     char *searchMovieTitle;
     int *indexes;
-	//int num;
     int result = 1;
     searchMovieTitle = (char *) malloc(sizeof(char) * 200);
 
+	//title
     while (1) {
-		//char num1[5];
         printf("Title to search: ");
         rewind(stdin);
         scanf("%[^\n]", searchMovieTitle);
@@ -732,6 +739,7 @@ void searchByMovieTitle() {
             }
             cnt++;
         }
+		free(searchMovieTitle);
 
         if (result == 1) {
             page++;
@@ -827,6 +835,7 @@ void searchTag() {
             printf("Tag doesn't exist\n");
         }
     }
+	free(searchTag);
 
     int count = 0;
     while (1) {
@@ -983,7 +992,7 @@ void recommendMovie() {
     } else {
         printf("Failed to fetch similar movies.");
     }
-
+	free(movietitle);
 }
 
 
