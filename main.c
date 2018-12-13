@@ -1053,6 +1053,7 @@ void recommendMovie() {
 void close() {
     save();
     integrity();
+    retire();
     exit(0);
 }
 
@@ -1131,6 +1132,7 @@ int main() {
     login();
     menu();
 
+    //code below will not be executed since close() includes exit(0) command
     if (integrity()) {
         printf("Error occured while reading file. Please check file content.\n");
     }
@@ -1139,7 +1141,6 @@ int main() {
     if (integrity()) {
         printf("Error occured while saving file. Please check file content.\n");
     }
-    retire();
     endTimer();
 
     return 0;
