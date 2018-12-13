@@ -230,9 +230,9 @@ void addMovie() {
     //final
     int resultData = addMovieEntity(movieEntity->movie_id, movieEntity->title, movieEntity->release_year,
                                     movieEntity->genre, movieEntity->sizeof_genre);
-	free(movieEntity);
-	free(movieEntity->title);
-	free(movieEntity->genre);
+	//free(movieEntity);
+	//free(movieEntity->title);
+	//free(movieEntity->genre);
     if (resultData == SUCCESS) {
         printf("ADD SUCCESSFULLY!!\n");
         return;
@@ -362,8 +362,8 @@ void addTag() {
 
     //final
     int resultData = addTagEntity(tagEntity->user_id, tagEntity->movie_id, tagEntity->tag);
-	free(tagEntity);
-	free(tagEntity->tag);
+	//free(tagEntity);
+	//free(tagEntity->tag);
     if (resultData == SUCCESS) {
         printf("ADD SUCCESSFULLY!!\n");
         return;
@@ -622,21 +622,32 @@ void addUser() {
             printf("user name has already been taken. try something else:\n");
         }
     }
+	//password
+	while (1) {
+	
+		printf("Password: ");
+		rewind(stdin);
+		scanf("%[^\n]", userEntity.password);
+		char *password;
+		password = (char*)malloc(sizeof(char) * 100);
+		printf("Enter password again: ");
+		rewind(stdin);
+		scanf("%[^\n]", password);
 
-    //password
-    printf("Password: ");
-    rewind(stdin);
-    scanf("%[^\n]", userEntity.password);
-
-    //password
-    printf("Enter password again: ");
-    rewind(stdin);
-    scanf("%[^\n]", userEntity.password);
+		if (!strcmp(userEntity.password,password)) {
+			//free(password);
+			break;
+		}
+		else {
+			printf("password is not coincidence.\n");
+		}
+	}
+    
 
     //final
     int resultData = addUserEntity(userEntity.user_id, userEntity.user_name, userEntity.password);
-	free(userEntity.user_name);
-	free(userEntity.password);
+	//free(userEntity.user_name);
+	//free(userEntity.password);
     if (resultData == SUCCESS) {
         printf("ADD SUCCESSFULLY!!\n");
         logged_in_user_index = userIndex_ByUserID(userEntity.user_id);
@@ -703,7 +714,7 @@ void searchByUserName() {
     } else {
         printf("There's no %s's favourite\n", userEntity.user_name);
     }
-	free(userEntity.user_name);
+	//free(userEntity.user_name);
     return;
 }
 
@@ -739,7 +750,7 @@ void searchByMovieTitle() {
             }
             cnt++;
         }
-		free(searchMovieTitle);
+		//free(searchMovieTitle);
 
         if (result == 1) {
             page++;
@@ -835,7 +846,7 @@ void searchTag() {
             printf("Tag doesn't exist\n");
         }
     }
-	free(searchTag);
+	//free(searchTag);
 
     int count = 0;
     while (1) {
@@ -992,7 +1003,7 @@ void recommendMovie() {
     } else {
         printf("Failed to fetch similar movies.");
     }
-	free(movietitle);
+	//free(movietitle);
 }
 
 
