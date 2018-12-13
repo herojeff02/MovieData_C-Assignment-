@@ -279,7 +279,7 @@ void removeMovie() {
 			scanf("%d", &num);
 			for (int i = 0;i < cnt;i++) {
 				if (num - 1 == i) {
-					if (deleteMovie_ByIndex(movieIndexRemove[i]) == SUCCESS) {
+					if (deleteMovie_ByIndex(*(movieIndexRemove + i)) == SUCCESS) {
 						printf("REMOVE SUCCESSFULLY!!\n");
 						return;
 					}
@@ -417,7 +417,7 @@ void removeTag() {
 						printf("It's too small\n");
 					}
 					else {
-						num = num1[0] - 1;
+						num = result - 1;
 						break;
 					}
 				}
