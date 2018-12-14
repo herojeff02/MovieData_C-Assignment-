@@ -230,9 +230,9 @@ void addMovie() {
     //final
     int resultData = addMovieEntity(movieEntity->movie_id, movieEntity->title, movieEntity->release_year,
                                     movieEntity->genre, movieEntity->sizeof_genre);
-	//free(movieEntity);
-	//free(movieEntity->title);
-	//free(movieEntity->genre);
+	free(movieEntity);
+	free(movieEntity->title);
+	free(movieEntity->genre);
     if (resultData == SUCCESS) {
         printf("ADD SUCCESSFULLY!!\n");
         return;
@@ -326,17 +326,17 @@ void addTag() {
         scanf("%[^\n]", title);
         if (matchingMovieTitleExists(title)) {
             movieIndex = movieIndex_ByMatchingTitle_WithoutYear(title);
-			int cnt = 0;
-			while (1) {
-				if (*(movieIndex + cnt) == END_OF_INT_ARRAY) {
-					break;
-				}
-				cnt++;
-			}
+            int cnt = 0;
+            while (1) {
+                if (*(movieIndex + cnt) == END_OF_INT_ARRAY) {
+                    break;
+                }
+                cnt++;
+            }
 
-			if (cnt > 1) {
+            if (cnt > 1) {
                 printf("More than 1 movies exist. Please select one.\n");
-                for (int i = 0;i < cnt;i++) {
+                for (int i = 0; i < cnt; i++) {
                     printf("%d. release year: %d\n", i + 1, (movies + *(movieIndex + i))->release_year);
                 }
                 while (1) {
@@ -345,25 +345,21 @@ void addTag() {
                     int result = forcedIntegerInput(num1, 1, 1);
                     if (result == FAIL_NOT_A_NUMBER) {
                         printf("It's not a number\n");
-                    }
-                    else if (result == FAIL_TOO_MANY_FIGURES) {
+                    } else if (result == FAIL_TOO_MANY_FIGURES) {
                         printf("It's too big\n");
-                    }
-                    else if (result == FAIL_LACK_OF_FIGURES) {
+                    } else if (result == FAIL_LACK_OF_FIGURES) {
                         printf("It's too small\n");
-                    }
-                    else {
+                    } else {
                         num = result - 1;
                         break;
                     }
                 }
-			}
-			else if (cnt == 1) {
-				num = 0;
-				break;
-			}
-        }
-		else {
+            } else if (cnt == 1) {
+                num = 0;
+                break;
+            }
+            break;
+        } else {
             printf("Movie doesn't exist in our DB. Maybe something else?:\n");
         }
     }
@@ -376,8 +372,8 @@ void addTag() {
 
     //final
     int resultData = addTagEntity(tagEntity->user_id, tagEntity->movie_id, tagEntity->tag);
-	//free(tagEntity);
-	//free(tagEntity->tag);
+//	free(tagEntity);
+//	free(tagEntity->tag);
     if (resultData == SUCCESS) {
         printf("ADD SUCCESSFULLY!!\n");
         return;
@@ -689,8 +685,8 @@ void addUser() {
 
     //final
     int resultData = addUserEntity(userEntity.user_id, userEntity.user_name, userEntity.password);
-	//free(userEntity.user_name);
-	//free(userEntity.password);
+	free(userEntity.user_name);
+	free(userEntity.password);
     if (resultData == SUCCESS) {
         printf("ADD SUCCESSFULLY!!\n");
         logged_in_user_index = userIndex_ByUserID(userEntity.user_id);
@@ -757,7 +753,7 @@ void searchByUserName() {
     } else {
         printf("There's no %s's favourite\n", userEntity.user_name);
     }
-	//free(userEntity.user_name);
+	free(userEntity.user_name);
     return;
 }
 
@@ -773,7 +769,6 @@ void searchByMovieTitle() {
         rewind(stdin);
         scanf("%[^\n]", searchMovieTitle);
         if (movieTitleExists(searchMovieTitle)) {
-            indexes = movieIndex_ByTitle(searchMovieTitle);
 			break;
         }
 		else {
@@ -793,7 +788,7 @@ void searchByMovieTitle() {
             }
             cnt++;
         }
-		//free(searchMovieTitle);
+		free(searchMovieTitle);
 
         if (result == 1) {
             page++;
@@ -889,7 +884,7 @@ void searchTag() {
             printf("Tag doesn't exist\n");
         }
     }
-	//free(searchTag);
+	free(searchTag);
 
     int count = 0;
     while (1) {
@@ -1046,7 +1041,7 @@ void recommendMovie() {
     } else {
         printf("Failed to fetch similar movies.");
     }
-	//free(movietitle);
+	free(movietitle);
 }
 
 

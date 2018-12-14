@@ -74,7 +74,6 @@ void deleteFavourite_FromUser(int user_id, int fav_index){
         }
     }
     (users+user_index) -> sizeof_favourites--;
-    printf("///%d", (users+user_index) -> sizeof_favourites);
 
     saveUser();
     initUser();
