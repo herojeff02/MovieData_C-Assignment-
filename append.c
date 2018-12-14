@@ -133,6 +133,11 @@ int addUserEntity(int user_id, char *userName, char *password) {
 
 int addFavouriteEntity(int user_id, int movie_id) {
     favourites = (Favourite *) realloc(favourites, (favourite_count + 1) * sizeof(Favourite));
+    for(int i=0;i<favourite_count;i++){
+        if((favourites + i)->user_id == user_id && (favourites + i)->movie_id == movie_id && (favourites + i)->enabled == 1){
+            return FAIL_USER_ID_ALREADY_EXISTS;
+        }
+    }
 
     (favourites + favourite_count)->user_id = user_id;
     (favourites + favourite_count)->movie_id = movie_id;
@@ -151,6 +156,11 @@ int addFavouriteEntity(int user_id, int movie_id) {
 }
 
 int addFavouriteIndex_ToUser(int user_index, int favourite_index) {
+    for(int i=0;i<(users + user_index)->sizeof_favourites;i++){
+        if(*((users + user_index)->favourite_index + i) == favourite_index){
+            return SUCCESS;
+        }
+    }
     (users + user_index)->favourite_index = realloc((users + user_index)->favourite_index,
                                                     sizeof(int) * ((users + user_index)->sizeof_favourites + 1));
     *(((users + user_index)->favourite_index) + (users + user_index)->sizeof_favourites) = favourite_index;

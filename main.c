@@ -817,7 +817,7 @@ void searchByMovieTitle() {
                         char *genre;
                         genre = string_ByGenreIndex(genreIndex[j]);
                         if (j < ((movies + *(indexes + i))->sizeof_genre) - 1) {
-                            printf("%s|", genre);
+                            printf("%s, ", genre);
                         } else {
                             printf("%s\n", genre);
                         }
