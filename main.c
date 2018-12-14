@@ -1132,8 +1132,6 @@ int main() {
     startTimer();
 
     init();
-
-
     login();
     menu();
 

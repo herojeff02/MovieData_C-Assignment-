@@ -149,59 +149,64 @@ void initUser() {
     } else {
         fp = fopen(userFile, "r");
         if (fp == NULL) {
-            fp = fopen(testUserFile, "w+");
+            fp = fopen(userFile, "w+");
         }
     }
 
     while (fgets(line, sizeof(line) - 1, fp) != NULL) {
         users = (User *) realloc(users, (index + 1) * sizeof(User));
 
-        char *split_t = split_back(line, "::");
-        char *split0 = split_front(line, "::"); //tag0
-        char *split_t_t = split_back(split_t, "::");
-        char *split1 = split_front(split_t, "::"); //tag1
-        char *split3 = split_back(split_t_t, "::");
-        char *split2 = split_front(split_t_t, "::");
+        if(!strcmp("\n", line)){
 
-        //0
-        (users + index)->user_id = atoi(split0);
-
-        //1
-        (users + index)->user_name = malloc((strlen(split1) + 1) * sizeof(char));
-        strcpy((users + index)->user_name, split1);
-
-        //2
-        (users + index)->password = malloc((strlen(split2) + 1) * sizeof(char));
-        strcpy((users + index)->password, split2);
-
-        //3
-        (users + index)->favourite_index = (int *) malloc(sizeof(int));
-        if (!strcmp(split3, "\n")) {
-            (users + index)->sizeof_favourites = 0;
-        } else {
-            split3 = strtok(split3, "\n");
-            int cnt;
-            if (strstr(split3, "|")) {
-                cnt = 0;
-                char *favourite_index_split = strtok(split3, "|");
-                while (favourite_index_split != NULL) {
-                    (users + index)->favourite_index = realloc((users + index)->favourite_index,
-                                                               (cnt + 1) * sizeof(int));
-                    *(((users + index)->favourite_index) + cnt) = atoi(favourite_index_split);
-                    favourite_index_split = strtok(NULL, "|");
-                    cnt++;
-                }
-                (users + index)->sizeof_favourites = cnt;
-            } else {
-                *(((users + index)->favourite_index)) = atoi(split3);
-                (users + index)->sizeof_favourites = 1;
-            }
         }
+        else {
+            char *split_t = split_back(line, "::");
+            char *split0 = split_front(line, "::"); //tag0
+            char *split_t_t = split_back(split_t, "::");
+            char *split1 = split_front(split_t, "::"); //tag1
+            char *split3 = split_back(split_t_t, "::");
+            char *split2 = split_front(split_t_t, "::");
 
-        (users + index)->enabled = 1;
+            //0
+            (users + index)->user_id = atoi(split0);
+
+            //1
+            (users + index)->user_name = malloc((strlen(split1) + 1) * sizeof(char));
+            strcpy((users + index)->user_name, split1);
+
+            //2
+            (users + index)->password = malloc((strlen(split2) + 1) * sizeof(char));
+            strcpy((users + index)->password, split2);
+
+            //3
+            (users + index)->favourite_index = (int *) malloc(sizeof(int));
+            if (!strcmp(split3, "\n")) {
+                (users + index)->sizeof_favourites = 0;
+            } else {
+                split3 = strtok(split3, "\n");
+                int cnt;
+                if (strstr(split3, "|")) {
+                    cnt = 0;
+                    char *favourite_index_split = strtok(split3, "|");
+                    while (favourite_index_split != NULL) {
+                        (users + index)->favourite_index = realloc((users + index)->favourite_index,
+                                                                   (cnt + 1) * sizeof(int));
+                        *(((users + index)->favourite_index) + cnt) = atoi(favourite_index_split);
+                        favourite_index_split = strtok(NULL, "|");
+                        cnt++;
+                    }
+                    (users + index)->sizeof_favourites = cnt;
+                } else {
+                    *(((users + index)->favourite_index)) = atoi(split3);
+                    (users + index)->sizeof_favourites = 1;
+                }
+            }
+
+            (users + index)->enabled = 1;
 
 
-        index++;
+            index++;
+        }
     }
 
     user_count = index;

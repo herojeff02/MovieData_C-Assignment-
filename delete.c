@@ -84,14 +84,16 @@ int deleteUser_ByIndex(int index) {
         return FAIL_NO_SUCH_INDEX;
     }
     (users + index)->enabled = 0;
-    saveUser();
-    initUser();
+
 
     for (int i = 0; i < favourite_count; i++) {
         if ((favourites + i)->user_id == (users + index)->user_id) {
             deleteFavourite_ByIndex(i);
         }
     }
+
+    saveUser();
+    initUser();
 
     return SUCCESS;
 }

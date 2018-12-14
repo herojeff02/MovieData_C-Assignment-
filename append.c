@@ -38,7 +38,7 @@ int addMovieEntity(int movie_id, char *title, int release_year, int *genre, shor
         }
         (movies + movie_count)->sizeof_genre = genre_count;
     } else {
-        *((movies + movie_count)->genre) = (int) malloc(sizeof(int));
+        (movies + movie_count)->genre = malloc(sizeof(int));
         char arr[] = "(no genres listed)";
         *((movies + movie_count)->genre) = genreIndex_ByString(arr);
         (movies + movie_count)->sizeof_genre = 0;
