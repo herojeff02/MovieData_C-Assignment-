@@ -735,8 +735,13 @@ void searchByUserName() {
     if (userIDExists_InTag(userEntity.user_id) == 1) {
         for (int i = 0; i < tag_count; i++) {
             if (userEntity.user_id == (tags + i)->user_id) {
-                printf("Tag \"%s\" for movie: %s\n", (tags + i)->tag,
-                       (movies + movieIndex_ByID((tags + i)->movie_id))->title);
+                if(movieIDExists((tags + i)->movie_id)){
+                    printf("Tag \"%s\" for movie: %s\n", (tags + i)->tag,
+                           (movies + movieIndex_ByID((tags + i)->movie_id))->title);
+                }
+                else{
+                    printf("Tag \"%s\" for unregistered movie\n", (tags + i)->tag);
+                }
             }
         }
     } else {
@@ -754,7 +759,6 @@ void searchByUserName() {
         printf("There's no %s's favourite\n", userEntity.user_name);
     }
 	free(userEntity.user_name);
-    return;
 }
 
 void searchByMovieTitle() {
@@ -842,9 +846,15 @@ void searchByMovieTitle() {
                 for (int j = 0; j < favourite_count; j++) {
                     if ((movies + *(indexes + i))->movie_id == (favourites + j)->movie_id) {
                         l++;
-                        printf("    User %s who likes movie <%s>\n",
-                               (users + userIndex_ByUserID((favourites + j)->user_id))->user_name,
-                               (movies + *(indexes + i))->title);
+                        if(userIDExists((favourites + j)->user_id)) {
+                            printf("    User %s likes movie <%s>\n",
+                                   (users + userIndex_ByUserID((favourites + j)->user_id))->user_name,
+                                   (movies + *(indexes + i))->title);
+                        }
+                        else{
+                            printf("    Unregistered user likes movie <%s>\n",
+                                   (movies + *(indexes + i))->title);
+                        }
                     }
                 }
                 if (l == 0) {
