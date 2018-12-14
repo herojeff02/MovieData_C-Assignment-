@@ -12,3 +12,4 @@ void saveFavourite();
 위 네 줄의 코드를 한번에 실행하는 함수가 아래의 save()입니다.
 
 void save();
+
